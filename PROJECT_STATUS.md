@@ -5,7 +5,7 @@ Delta Exchange (India) and Hyperliquid, and everything below was produced by
 running the system rather than asserted.
 
 ```
- 598 tests passing in ~145s           (unit, property, integration, API contract; SQLite, offline)
+ 599 tests passing in ~145s           (unit, property, integration, API contract; SQLite, offline)
   10 browser tests passing            Playwright on Chrome, real API + dashboard, replay data
    0 errors under load                219 req/s at 50 clients, 154 at 200 (one process, laptop in powersave)
   25/25 acceptance steps passing      hedgelab demo — on replay and on live data in Docker
@@ -196,7 +196,7 @@ tests/integration/test_workflow.py          25 passed
 tests/integration/test_websocket_and_scenarios.py  24 passed
 tests/integration/test_acceptance.py         3 passed
                                            ---
-                                           598 passed in ~145s
+                                           599 passed in ~145s
 ```
 
 All offline: the inputs are committed real data —

@@ -50,7 +50,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools.package-data]
-hedgelab = ["instruments/specs/*.yaml", "py.typed"]
+hedgelab = ["instruments/specs/*.yaml", "api/openapi_examples.json", "py.typed"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

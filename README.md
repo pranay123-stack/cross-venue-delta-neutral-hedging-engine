@@ -231,7 +231,7 @@ make check       # lint, strict types, tests, frontend build, browser tests
 
 | Check | Result | How it is measured |
 |---|---|---|
-| Backend tests | **598 passed**, offline | `make test` — unit, Hypothesis property tests, integration, API contract, WebSocket. A fixture fails any test that touches the network; inputs are committed recordings of the real venues |
+| Backend tests | **599 passed**, offline | `make test` — unit, Hypothesis property tests, integration, API contract, WebSocket. A fixture fails any test that touches the network; inputs are committed recordings of the real venues |
 | Browser tests | **10 passed** | `make e2e` — Playwright on Chrome against the real API and dashboard on replay data |
 | Coverage | **88 %** overall, 93–100 % on the calculation core | `pytest --cov` |
 | Lint / types | ruff clean · mypy strict clean (86 files) · tsc clean | `make lint typecheck` |

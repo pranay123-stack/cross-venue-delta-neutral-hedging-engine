@@ -2,7 +2,7 @@
 
 ```bash
 cd backend
-.venv/bin/python -m pytest tests/ -q          # 598 tests, ~145s, offline
+.venv/bin/python -m pytest tests/ -q          # 599 tests, ~145s, offline
 .venv/bin/python -m pytest --cov=src/hedgelab --cov-report=term-missing
 .venv/bin/hedgelab demo                       # the 25-step acceptance run
 .venv/bin/hedgelab scenario run-all           # the ten demo scenarios
