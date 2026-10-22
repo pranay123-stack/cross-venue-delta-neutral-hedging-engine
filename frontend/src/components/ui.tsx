@@ -75,7 +75,13 @@ export function StateBadge({ state }: { state: string }) {
 }
 
 export function ConnectionDot({ connected }: { connected: boolean }) {
-  return <span className={`dot ${connected ? "on" : "off"}`} />;
+  return (
+    <span
+      className={`dot ${connected ? "on" : "off"}`}
+      role="img"
+      aria-label={connected ? "connected" : "disconnected"}
+    />
+  );
 }
 
 export function Bar({ pct, warnAt = 70, dangerAt = 90 }: { pct: number; warnAt?: number; dangerAt?: number }) {
@@ -90,7 +96,7 @@ export function Bar({ pct, warnAt = 70, dangerAt = 90 }: { pct: number; warnAt?:
 
 export function ErrorBox({ message }: { message: string | null }) {
   if (!message) return null;
-  return <div className="error">{message}</div>;
+  return <div className="error" role="alert">{message}</div>;
 }
 
 export function Notice({ children }: { children: ReactNode }) {

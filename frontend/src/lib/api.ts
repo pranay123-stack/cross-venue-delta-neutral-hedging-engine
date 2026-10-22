@@ -82,6 +82,41 @@ export interface SystemStatus {
   paused_pairs: string[];
   market_clock: string | null;
   market_data_source: string;
+  market_overlays?: MarketOverlays;
+  watchdog?: WatchdogStatus;
+  hard_limit_breaches?: LimitBreach[];
+}
+
+export interface MarketOverlays {
+  scenarios: Record<string, string>;
+  price_shocks: Record<string, string>;
+  funding_overrides: Record<string, string>;
+}
+
+export interface WatchdogStatus {
+  running: boolean;
+  last_check_age_s?: number;
+  verdict?: string;
+  detail?: string;
+}
+
+export interface LimitBreach {
+  venue: string;
+  symbol: string;
+  limit: string;
+  detail: string;
+  at: string;
+}
+
+/** GET /market -- where prices come from right now. */
+export interface MarketState {
+  source: "live" | "replay" | string;
+  clock: string | null;
+  frames_applied: number;
+  replay: { position: number; frames: number } | null;
+  overlays: MarketOverlays;
+  underlyings: Record<string, string>;
+  fx: Record<string, string>;
 }
 
 export interface VenueHealth {

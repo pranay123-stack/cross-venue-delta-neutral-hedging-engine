@@ -45,7 +45,7 @@ test("every page renders without a console error", async ({ page }) => {
 test("the top bar says paper only, real replayed data, both venues", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByText("PAPER TRADING ONLY")).toBeVisible();
-  await expect(page.getByText(/replay data/)).toBeVisible();
+  await expect(page.locator(".topbar").getByText("REPLAY DATA")).toBeVisible();
   await expect(page.locator(".topbar").getByText("PAPER_DELTA")).toBeVisible();
   await expect(page.locator(".topbar").getByText("PAPER_HYPERLIQUID")).toBeVisible();
 });
@@ -86,4 +86,42 @@ test("injecting a Hyperliquid outage shows it disconnected, clearing restores it
   await expect(row).toHaveText("DISCONNECTED");
   await page.getByRole("button", { name: "Clear all faults and reconnect" }).click();
   await expect(row).toHaveText("connected");
+});
+
+test("the first screen says where prices come from and what execution is", async ({ page }) => {
+  await page.goto("/");
+  const summary = page.getByRole("region", { name: "System at a glance" });
+  await expect(summary.getByText("PAPER", { exact: true })).toBeVisible();
+  await expect(summary.getByText("not implemented")).toBeVisible();
+  await expect(summary.getByText("RECORDED REPLAY")).toBeVisible();
+  await expect(summary.getByText(/frame \d+ of 500/)).toBeVisible();
+  await expect(summary.getByText("Every price shown is the real market, unmodified.")).toBeVisible();
+  await expect(summary.getByText("2 / 2 connected")).toBeVisible();
+});
+
+test("a stress overlay is labelled as hypothetical until it is cleared", async ({ page, request }) => {
+  await request.post(`${API}/market/stress`, { data: { scenario: "SPREAD_WIDENING" } });
+  await page.goto("/");
+  const summary = page.getByRole("region", { name: "System at a glance" });
+  await expect(summary.getByText("HYPOTHETICAL PRICES")).toBeVisible();
+  await expect(summary.getByText(/SPREAD_WIDENING/)).toBeVisible();
+  await request.delete(`${API}/market/stress`);
+  await page.reload();
+  await expect(summary.getByText("NONE", { exact: true })).toBeVisible();
+});
+
+test("funding is shown per interval and annualised so the venues compare", async ({ page }) => {
+  await page.goto("/");
+  const market = page.locator(".panel", { hasText: "Market data" }).last();
+  await expect(market.getByText(/bps \/ 8h/).first()).toBeVisible();     // Delta, 8-hourly
+  await expect(market.getByText(/bps \/ 1h/).first()).toBeVisible();     // Hyperliquid, hourly
+  await expect(market.getByText("Annualised", { exact: true })).toBeVisible();
+  await expect(market.getByText(/bps \/ 4h/).first()).toBeVisible();     // Delta PAXG, 4-hourly
+});
+
+test("an unreachable API is reported, not left loading forever", async ({ page }) => {
+  await page.route("**/api/accounts", (route) => route.abort());
+  await page.route("**/api/portfolio", (route) => route.abort());
+  await page.goto("/");
+  await expect(page.getByRole("alert")).toContainText("cannot reach the API");
 });

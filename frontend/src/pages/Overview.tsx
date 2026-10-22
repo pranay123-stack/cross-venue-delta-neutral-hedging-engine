@@ -2,13 +2,25 @@ import { useQuery } from "@/hooks/useApi";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import type {
   Account,
+  Instrument,
   PairRisk,
   PnLBreakdown,
   PortfolioRisk,
   SystemStatus,
   Ticker,
 } from "@/lib/api";
-import { Bar, Empty, Loading, MoneyStat, Panel, RiskBadge, Stat } from "@/components/ui";
+import { SystemSummary } from "@/components/SystemSummary";
+import {
+  Bar,
+  Empty,
+  ErrorBox,
+  Loading,
+  MoneyStat,
+  Notice,
+  Panel,
+  RiskBadge,
+  Stat,
+} from "@/components/ui";
 import { bps, decimal, marginLevelClass, money, num, pct, ratio, signClass, time } from "@/lib/format";
 
 interface RiskResponse { count: number; worst_level: string; pairs: PairRisk[] }
@@ -19,14 +31,16 @@ interface AccountsResponse {
   totals: Record<string, string>;
 }
 interface MarketResponse { tickers: Ticker[]; clock: string }
+interface InstrumentsResponse { instruments: Instrument[] }
 
 export function Overview() {
   const { data: status } = useQuery<SystemStatus>("/system/status", 5000);
-  const { data: accounts } = useQuery<AccountsResponse>("/accounts", 3000);
-  const { data: portfolio } = useQuery<PortfolioRisk>("/portfolio", 4000);
+  const { data: accounts, error: accountsError } = useQuery<AccountsResponse>("/accounts", 3000);
+  const { data: portfolio, error: portfolioError } = useQuery<PortfolioRisk>("/portfolio", 4000);
+  const { data: instruments } = useQuery<InstrumentsResponse>("/instruments", 0);
   const { data: risk } = useQuery<RiskResponse>("/risk", 4000);
   const { data: pnl } = useQuery<PnLResponse>("/pnl", 5000);
-  const { data: market } = useQuery<MarketResponse>("/market-data", 10000);
+  const { data: market, error: marketError } = useQuery<MarketResponse>("/market-data", 10000);
   const { frames } = useWebSocket(["prices"]);
 
   const livePrices = (frames.prices?.data?.tickers ?? []) as Array<{
@@ -34,7 +48,22 @@ export function Overview() {
   }>;
   const priceByKey = new Map(livePrices.map((t) => [t.key, t]));
 
-  if (!accounts || !portfolio) return <Loading what="overview" />;
+  const intervalHours = new Map(
+    (instruments?.instruments ?? []).map((i) => [i.key, num(i.funding_interval_hours)]),
+  );
+
+  if (!accounts || !portfolio) {
+    const failure = accountsError ?? portfolioError;
+    if (!failure) return <Loading what="overview" />;
+    return (
+      <>
+        <h2 className="page-title">Overview</h2>
+        <ErrorBox
+          message={`The dashboard cannot reach the API: ${failure}. Is the backend running? Start it with \`docker compose up\` (API on port 8001).`}
+        />
+      </>
+    );
+  }
 
   const currency = accounts.currency;
   const fundingPerDay = num(portfolio.aggregate_funding_per_day);
@@ -43,10 +72,22 @@ export function Overview() {
     <>
       <h2 className="page-title">Overview</h2>
       <p className="page-sub">
-        Aggregate state of the paper book across Delta Exchange and Hyperliquid.
-        Prices, books and funding are the venues' real public market data; every
-        order is a paper fill against those books — no order can reach a venue.
+        A Delta Exchange perpetual hedged with the same coin on Hyperliquid, so price
+        moves cancel. Prices, books and funding are the venues&apos; real public market
+        data; every order is a paper fill against those books — no order can reach a
+        venue.
       </p>
+
+      {status && <SystemSummary status={status} tickers={market?.tickers} />}
+
+      {num(portfolio.gross_notional) === 0 && (
+        <Notice>
+          The paper book is flat. Open a position and hedge it on <strong>Hedge Pairs</strong>,
+          size one on <strong>Hedge Calculator</strong>, or run{" "}
+          <code>hedgelab demo</code> to drive a complete hedge cycle with failures and
+          recovery.
+        </Notice>
+      )}
 
       <div className="grid cols-4" style={{ marginBottom: 16 }}>
         <MoneyStat
@@ -231,7 +272,13 @@ export function Overview() {
           }
         >
           {!market ? (
-            <Loading what="prices" />
+            marketError ? (
+              <ErrorBox message={`No market data: ${marketError}`} />
+            ) : (
+              <Loading what="prices" />
+            )
+          ) : market.tickers.length === 0 ? (
+            <Empty what="quotes from either venue — the first poll is pending" />
           ) : (
             <div className="table-scroll">
               <table>
@@ -241,7 +288,15 @@ export function Overview() {
                     <th className="num">Bid</th>
                     <th className="num">Ask</th>
                     <th className="num">Spread</th>
-                    <th className="num">Funding</th>
+                    <th className="num" title="Funding per settlement interval, as each venue charges it">
+                      Funding / interval
+                    </th>
+                    <th
+                      className="num"
+                      title="The per-interval rate scaled to a year, so 8-hourly Delta and hourly Hyperliquid rates are comparable"
+                    >
+                      Annualised
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -264,7 +319,19 @@ export function Overview() {
                         </td>
                         <td className="num">
                           {ticker.funding_rate
-                            ? `${(num(ticker.funding_rate) * 10000).toFixed(2)} bps`
+                            ? `${(num(ticker.funding_rate) * 10000).toFixed(3)} bps / ${
+                                intervalHours.get(ticker.key) ?? "?"
+                              }h`
+                            : "—"}
+                        </td>
+                        <td className="num">
+                          {ticker.funding_rate && intervalHours.get(ticker.key)
+                            ? `${(
+                                num(ticker.funding_rate) *
+                                (24 / (intervalHours.get(ticker.key) as number)) *
+                                365 *
+                                100
+                              ).toFixed(2)}%`
                             : "—"}
                         </td>
                       </tr>

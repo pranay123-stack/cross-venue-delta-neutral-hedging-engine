@@ -12,7 +12,17 @@ export default defineConfig({
     host: true,
     proxy: {
       "/api": { target: process.env.VITE_API_TARGET ?? "http://localhost:8000", changeOrigin: true },
-      "/ws": { target: process.env.VITE_API_TARGET ?? "http://localhost:8000", ws: true },
+      "/ws": {
+        target: process.env.VITE_API_TARGET ?? "http://localhost:8000",
+        ws: true,
+        // A socket torn down by a closing tab surfaces as EPIPE/ECONNRESET;
+        // that is normal, so only other proxy errors are worth printing.
+        configure: (proxy) => {
+          proxy.on("error", (err: NodeJS.ErrnoException) => {
+            if (err.code !== "EPIPE" && err.code !== "ECONNRESET") console.error("[ws proxy]", err);
+          });
+        },
+      },
     },
   },
   build: { outDir: "dist", sourcemap: true },

@@ -55,12 +55,18 @@ export function Layout() {
                   {venue.venue}
                 </span>
               ))}
-              <span className="small">
+              <span className="small" title="The dashboard's WebSocket to the backend">
                 <ConnectionDot connected={connected} />
-                live feed
+                dashboard stream
+              </span>
+              <span
+                className={`badge ${status.market_data_source === "replay" ? "level-WARNING" : "level-NORMAL"}`}
+                title="Where prices come from: the venues' live public APIs, or a replayed recording of a live session"
+              >
+                {status.market_data_source === "replay" ? "REPLAY DATA" : "LIVE DATA"}
               </span>
               <span className="small muted mono">
-                {status.market_data_source} data · {status.market_clock ? time(status.market_clock) : "awaiting first poll"}
+                {status.market_clock ? time(status.market_clock) : "awaiting first poll"}
               </span>
               {status.kill_switch_engaged ? (
                 <RiskBadge level="KILL_SWITCH" />
