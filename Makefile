@@ -5,7 +5,7 @@ REPLAY := HEDGELAB_MARKET_DATA_SOURCE=replay \
 	HEDGELAB_MARKET_REPLAY_PATH=$(CURDIR)/backend/tests/data/live_frames.jsonl.gz \
 	HEDGELAB_MARKET_HISTORY_PATH=$(CURDIR)/backend/tests/data/history.json.gz
 
-.PHONY: help install test lint format typecheck frontend e2e check demo demo-live scenarios backtest up down screenshots
+.PHONY: help install test lint format typecheck frontend e2e check demo demo-live scenarios backtest up down screenshots api-examples
 
 help:  ## list targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-12s %s\n", $$1, $$2}'
@@ -57,3 +57,6 @@ down:
 
 screenshots:  ## re-capture README screenshots from the running app
 	cd frontend && npx playwright test -c playwright.screenshots.config.ts
+
+api-examples:  ## re-record the real request/response examples shown in Swagger UI
+	cd backend && .venv/bin/python scripts/capture_api_examples.py

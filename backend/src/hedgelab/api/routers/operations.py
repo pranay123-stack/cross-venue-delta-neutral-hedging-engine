@@ -1,4 +1,4 @@
-"""Simulation control, fault injection, reconciliation, audit and system status."""
+"""Market feed and stress overlays, fault injection, reconciliation, audit and system status."""
 
 from __future__ import annotations
 

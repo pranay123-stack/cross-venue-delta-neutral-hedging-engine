@@ -1,0 +1,3775 @@
+{
+ "DELETE /api/emergency/kill-switch": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "engaged": false
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/emergency/kill-switch"
+    },
+    "title": "Clear the kill switch"
+   }
+  }
+ },
+ "DELETE /api/fault-injection": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "disarmed": 1,
+     "scenario": "NORMAL",
+     "venues_reconnected": [
+      "PAPER_DELTA",
+      "PAPER_HYPERLIQUID"
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/fault-injection"
+    },
+    "title": "Disarm everything"
+   }
+  }
+ },
+ "DELETE /api/instruments/{key}": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "detail": "PAPER_HYPERLIQUID:AVAX removed"
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/instruments/PAPER_HYPERLIQUID:AVAX"
+    },
+    "title": "Remove the coin"
+   },
+   "409": {
+    "body": {
+     "detail": "PAPER_HYPERLIQUID:BTC is used by hedge pair(s) BTC Delta perp -> Hyperliquid perp; remove them first"
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/instruments/PAPER_HYPERLIQUID:BTC"
+    },
+    "title": "Instrument still used by a pair"
+   }
+  }
+ },
+ "DELETE /api/market/stress": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "overlays": {
+      "funding_overrides": {},
+      "price_shocks": {},
+      "scenarios": {
+       "GLOBAL": "NORMAL"
+      }
+     }
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/market/stress"
+    },
+    "title": "Back to the real market"
+   }
+  }
+ },
+ "GET /": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "docs": "/docs",
+     "name": "HedgeLab",
+     "openapi": "/openapi.json",
+     "paper_only": true,
+     "trading_mode": "PAPER",
+     "version": "1.0.0",
+     "websocket": "/ws"
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/"
+    },
+    "title": "Service banner"
+   }
+  }
+ },
+ "GET /api/accounts": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "accounts": [
+      {
+       "balance": "249795.81375000",
+       "currency": "USD",
+       "equity": "249792.06375000",
+       "fees_paid": "204.18625000",
+       "free_margin": "244602.01597559",
+       "funding_net": "0",
+       "is_connected": true,
+       "maintenance_margin": "2595.02388721",
+       "margin_level": "4812.904901986112043481489167",
+       "margin_utilization_pct": "2.077747265663479270565896832",
+       "open_positions": 1,
+       "realized_pnl": "0",
+       "timestamp": "2026-10-22T18:13:32.157271+00:00",
+       "unrealized_pnl": "-3.75000000",
+       "used_margin": "5190.04777441",
+       "venue": "PAPER_DELTA"
+      },
+      {
+       "balance": "249816.19807442",
+       "currency": "USD",
+       "equity": "249813.69844942",
+       "fees_paid": "183.80192558",
+       "free_margin": "239602.41787129",
+       "funding_net": "0",
+       "is_connected": true,
+       "maintenance_margin": "5105.64028906",
+       "margin_level": "2446.448283719264747747733035",
+       "margin_utilization_pct": "4.087558305053270323643178490",
+       "open_positions": 1,
+       "realized_pnl": "0",
+       "timestamp": "2026-10-22T18:13:32.157401+00:00",
+       "unrealized_pnl": "-2.49962500",
+       "used_margin": "10211.28057813",
+       "venue": "PAPER_HYPERLIQUID"
+      }
+     ],
+     "currency": "USD",
+     "totals": {
+      "equity": "499605.76219942",
+      "free_margin": "484204.43384688",
+      "unrealized_pnl": "-6.24962500",
+      "used_margin": "15401.32835254"
+     }
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/accounts"
+    },
+    "title": "Accounts"
+   }
+  }
+ },
+ "GET /api/audit": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "count": 3,
+     "entries": [
+      {
+       "action": "ADOPT_VENUE_STATE",
+       "actor": "anonymous",
+       "after": {
+        "positions": [
+         {
+          "key": "PAPER_DELTA:BTCUSD",
+          "quantity": "5000"
+         },
+         {
+          "key": "PAPER_HYPERLIQUID:BTC",
+          "quantity": "-5.00000"
+         }
+        ]
+       },
+       "before": {
+        "positions": [
+         {
+          "key": "PAPER_DELTA:BTCUSD",
+          "quantity": "5000"
+         },
+         {
+          "key": "PAPER_HYPERLIQUID:BTC",
+          "quantity": "-5.00000"
+         }
+        ]
+       },
+       "correlation_id": "384177da192745cb",
+       "entity_id": null,
+       "entity_type": "positions",
+       "timestamp": "2026-10-22T18:13:32.514157+00:00"
+      },
+      {
+       "action": "INJECT_FAULT",
+       "actor": "system",
+       "after": {
+        "connected": false,
+        "immediate": true,
+        "kind": "HYPERLIQUID_DISCONNECT",
+        "venue": "PAPER_HYPERLIQUID"
+       },
+       "before": null,
+       "correlation_id": "e54b14504a104393",
+       "entity_id": "HYPERLIQUID_DISCONNECT",
+       "entity_type": "fault",
+       "timestamp": "2026-10-22T18:13:32.426910+00:00"
+      },
+      "... 1 more"
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": {
+      "limit": 3
+     },
+     "path": "/api/audit"
+    },
+    "title": "Audit trail"
+   }
+  }
+ },
+ "GET /api/audit/configuration-changes": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "changes": [
+      {
+       "actor": "anonymous",
+       "after": {
+        "hedge": "PAPER_HYPERLIQUID:BTC",
+        "objective": "QUOTE_PNL_NEUTRAL",
+        "source": "PAPER_DELTA:BTCUSD"
+       },
+       "before": null,
+       "entity": "hedge_mapping",
+       "entity_id": "BTC Delta perp -> Hyperliquid perp",
+       "note": "hedge pair configured through the API",
+       "timestamp": "2026-10-22T18:13:32.564235+00:00"
+      },
+      {
+       "actor": "anonymous",
+       "after": null,
+       "before": {
+        "active": true,
+        "allow_long": true,
+        "allow_short": true,
+        "base_asset": "AVAX",
+        "baseline_funding_rate": "0",
+        "contract_multiplier": "1",
+        "contract_size": "1",
+        "display_name": "",
+        "effective_initial_margin_rate": "0.1",
+        "effective_maintenance_margin_rate": "0.05",
+        "effective_underlying_key": "AVAX",
+        "fee_currency": "",
+        "funding_interval_hours": "1",
+        "funding_model": "PERPETUAL_FUNDING",
+        "initial_margin_rate": null,
+        "initial_margin_scaling": "0",
+        "instrument_type": "PERPETUAL",
+        "is_inverse": false,
+        "key": "PAPER_HYPERLIQUID:AVAX",
+        "maintenance_margin_rate": null,
+        "maintenance_margin_scaling": "0",
+        "maker_fee_bps": "2",
+        "margin_model": "ISOLATED_LINEAR",
+        "margin_scaling_notional": "0",
+        "max_leverage": "10",
+        "max_quantity": "1000000",
+        "min_notional": "10",
+        "min_quantity": "0.01",
+        "price_precision": 3,
+        "price_source": "hyperliquid",
+        "quantity_precision": 2,
+        "quantity_step": "0.01",
+        "quantity_unit": "BASE_UNIT",
+        "quote_asset": "USDC",
+        "settlement_asset": "USDC",
+        "settlement_style": "LINEAR",
+        "sizing_description": "1 base_unit = 1 AVAX",
+        "slippage_bps_per_unit_liquidity": "0",
+        "swap_long_points": "0",
+        "swap_short_points": "0",
+        "swap_triple_weekday": 2,
+        "symbol": "AVAX",
+        "taker_fee_bps": "5",
+        "tick_size": "0.001",
+        "tick_value": null,
+        "trading_hours": {
+         "always_open": true,
+         "sessions": [],
+         "timezone": "UTC"
+        },
+        "typical_spread_bps": "2",
+        "underlying_key": "AVAX",
+        "units_per_contract": null,
+        "units_per_lot": null,
+        "units_per_quantity": "1",
+        "venue": "PAPER_HYPERLIQUID",
+        "venue_instrument_id": "",
+        "venue_kind": "PERPETUAL_EXCHANGE"
+       },
+       "entity": "instrument",
+       "entity_id": "PAPER_HYPERLIQUID:AVAX",
+       "note": "instrument removed",
+       "timestamp": "2026-10-22T18:13:32.548161+00:00"
+      },
+      "... 1 more"
+     ],
+     "count": 3
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": {
+      "limit": 3
+     },
+     "path": "/api/audit/configuration-changes"
+    },
+    "title": "Configuration changes"
+   }
+  }
+ },
+ "GET /api/audit/system-events": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "count": 3,
+     "events": [
+      {
+       "component": "reconciliation",
+       "correlation_id": "ca96dc02898743ee",
+       "kind": "RESTART_RECOVERY",
+       "message": "recovery can resume automatically",
+       "payload": {
+        "cycles_needing_attention": [],
+        "notes": [
+         "state reconstructed cleanly: database, perpetual venue and broker agree"
+        ],
+        "orphaned_orders": [],
+        "reconciliation": {
+         "checked_venues": [
+          "PAPER_DELTA",
+          "PAPER_HYPERLIQUID"
+         ],
+         "database_positions": 2,
+         "discrepancies": [],
+         "has_critical": false,
+         "is_clean": true,
+         "issue_counts": {},
+         "timestamp": "2026-10-22T18:13:32.484762+00:00",
+         "unreachable_venues": [],
+         "venue_positions": 2
+        },
+        "reconstructed_cycles": [],
+        "required_actions": [],
+        "resumable": true
+       },
+       "severity": "INFO",
+       "timestamp": "2026-10-22T18:13:32.485757+00:00"
+      },
+      {
+       "component": "reconciliation",
+       "correlation_id": "e475e675183948ea",
+       "kind": "RECONCILIATION",
+       "message": "0 discrepancies across 2 venues",
+       "payload": {
+        "checked_venues": [
+         "PAPER_DELTA",
+         "PAPER_HYPERLIQUID"
+        ],
+        "database_positions": 2,
+        "discrepancies": [],
+        "has_critical": false,
+        "is_clean": true,
+        "issue_counts": {},
+        "timestamp": "2026-10-22T18:13:32.450490+00:00",
+        "unreachable_venues": [],
+        "venue_positions": 2
+       },
+       "severity": "INFO",
+       "timestamp": "2026-10-22T18:13:32.451795+00:00"
+      },
+      "... 1 more"
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": {
+      "limit": 3
+     },
+     "path": "/api/audit/system-events"
+    },
+    "title": "System events"
+   }
+  }
+ },
+ "GET /api/dry-run-orders": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "count": 2,
+     "orders": [
+      {
+       "at": "2026-10-22T18:13:31.895624+00:00",
+       "endpoint": "POST /v2/orders",
+       "issues": [],
+       "paper": {
+        "average_price": "81674.5",
+        "fees": "204.18625000",
+        "filled": "5000",
+        "status": "FILLED"
+       },
+       "payload": {
+        "client_order_id": "cli-194d4c60e9994e66",
+        "order_type": "market_order",
+        "post_only": false,
+        "product_id": 27,
+        "product_symbol": "BTCUSD",
+        "reduce_only": false,
+        "side": "buy",
+        "size": 5000,
+        "time_in_force": "ioc"
+       },
+       "sendable": true,
+       "symbol": "BTCUSD",
+       "venue": "PAPER_DELTA"
+      },
+      {
+       "at": "2026-10-22T18:13:32.023594+00:00",
+       "endpoint": "POST /exchange",
+       "issues": [],
+       "paper": {
+        "average_price": "81702",
+        "fees": "183.80192558",
+        "filled": "5.00000",
+        "status": "FILLED"
+       },
+       "payload": {
+        "grouping": "na",
+        "orders": [
+         {
+          "a": 0,
+          "b": false,
+          "c": "0x2928c13d8a98536a666c678ebdb6223a",
+          "p": "77618",
+          "r": false,
+          "s": "5",
+          "t": {
+           "limit": {
+            "tif": "Ioc"
+           }
+          }
+         }
+        ],
+        "type": "order"
+       },
+       "sendable": true,
+       "symbol": "BTC",
+       "venue": "PAPER_HYPERLIQUID"
+      }
+     ],
+     "unsendable": 0
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": {
+      "limit": 2
+     },
+     "path": "/api/dry-run-orders"
+    },
+    "title": "Orders as the venues would receive them"
+   }
+  }
+ },
+ "GET /api/emergency/actions": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "actions": [],
+     "count": 0
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": {
+      "limit": 5
+     },
+     "path": "/api/emergency/actions"
+    },
+    "title": "Emergency action history"
+   }
+  }
+ },
+ "GET /api/fault-injection": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "active_scenarios": {
+      "GLOBAL": "NORMAL"
+     },
+     "armed": [],
+     "available": [
+      {
+       "immediate": false,
+       "kind": "LEG1_PARTIAL_FILL"
+      },
+      {
+       "immediate": false,
+       "kind": "LEG2_PARTIAL_FILL"
+      },
+      "... 12 more"
+     ],
+     "history": [],
+     "overlays": {
+      "funding_overrides": {},
+      "price_shocks": {},
+      "scenarios": {
+       "GLOBAL": "NORMAL"
+      }
+     },
+     "venue_connectivity": {
+      "PAPER_DELTA": true,
+      "PAPER_HYPERLIQUID": true
+     }
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/fault-injection"
+    },
+    "title": "Faults"
+   }
+  }
+ },
+ "GET /api/funding": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "horizon_days": "7",
+     "pairs": [
+      {
+       "currency": "USD",
+       "explanation": "source BTCUSD: funding -0.3581 bps x 3/day on 408368.75 USD = 43.8674/day; hedge BTC: funding 0.1250 bps x 24/day on -408512.50 USDC = 122.5354/day",
+       "hedge_annualized_pct": "10.9500",
+       "hedge_per_day": "122.535367",
+       "horizon_days": "7",
+       "is_positive_carry": true,
+       "net_annualized_pct": "14.8701",
+       "net_over_horizon": "1164.819652",
+       "net_per_day": "166.402807",
+       "pair": "BTC Delta perp -> Hyperliquid perp",
+       "source_annualized_pct": "3.9209",
+       "source_per_day": "43.867441"
+      },
+      {
+       "currency": "USD",
+       "explanation": "neither leg carries financing",
+       "hedge_annualized_pct": "0.0000",
+       "hedge_per_day": "0.000000",
+       "horizon_days": "7",
+       "is_positive_carry": false,
+       "net_annualized_pct": "0.0000",
+       "net_over_horizon": "0.000000",
+       "net_per_day": "0.000000",
+       "pair": "ETH Delta perp -> Hyperliquid perp",
+       "source_annualized_pct": "0.0000",
+       "source_per_day": "0.000000"
+      },
+      "... 2 more"
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": {
+      "horizon_days": 7
+     },
+     "path": "/api/funding"
+    },
+    "title": "Funding projection, 7 days"
+   }
+  }
+ },
+ "GET /api/funding/history": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "count": 2,
+     "entries": [
+      {
+       "amount": "40.84512231",
+       "currency": "USD",
+       "kind": "FUNDING",
+       "rate": "0.0000125",
+       "symbol": "BTC",
+       "timestamp": "2026-10-22T18:13:32.317772+00:00",
+       "venue": "PAPER_HYPERLIQUID"
+      },
+      {
+       "amount": "14.62248018",
+       "currency": "USD",
+       "kind": "FUNDING",
+       "rate": "-0.000035807049829229345",
+       "symbol": "BTCUSD",
+       "timestamp": "2026-10-22T18:13:32.315405+00:00",
+       "venue": "PAPER_DELTA"
+      }
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": {
+      "limit": 5
+     },
+     "path": "/api/funding/history"
+    },
+    "title": "Applied funding"
+   }
+  }
+ },
+ "GET /api/fx-rates": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "account_currency": "USD",
+     "pivot": "USD",
+     "rates": [
+      {
+       "base": "USDC",
+       "pair": "USDC/USD",
+       "quote": "USD",
+       "rate": "0.99985000",
+       "source": "kraken",
+       "timestamp": "2026-10-22T18:13:31.403024+00:00"
+      },
+      {
+       "base": "USDT",
+       "pair": "USDT/USD",
+       "quote": "USD",
+       "rate": "0.99905500",
+       "source": "kraken",
+       "timestamp": "2026-10-22T18:13:31.403054+00:00"
+      }
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/fx-rates"
+    },
+    "title": "FX rates"
+   }
+  }
+ },
+ "GET /api/health": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "paper_only": true,
+     "status": "ok",
+     "trading_mode": "PAPER",
+     "version": "1.0.0"
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/health"
+    },
+    "title": "Liveness"
+   }
+  }
+ },
+ "GET /api/hedge-configs": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "hard_limits": {
+      "max_daily_loss_per_venue": "100000",
+      "max_order_notional": "3500000",
+      "max_orders_per_minute": 60,
+      "max_position_notional": "5000000"
+     },
+     "pairs": [
+      {
+       "enabled": true,
+       "name": "BTC Delta perp -> Hyperliquid perp",
+       "objective": "QUOTE_PNL_NEUTRAL",
+       "target_ratio": "1.0",
+       "tolerance_bps": "25"
+      },
+      {
+       "enabled": true,
+       "name": "ETH Delta perp -> Hyperliquid perp",
+       "objective": "BASE_ASSET_NEUTRAL",
+       "target_ratio": "1.0",
+       "tolerance_bps": "30"
+      },
+      "... 2 more"
+     ],
+     "portfolio_limits": {
+      "max_aggregate_margin_utilization": "70",
+      "max_concentration_pct": "60",
+      "max_currency_exposure": "1000000",
+      "max_daily_loss": "25000",
+      "max_net_exposure_pct": "15",
+      "max_total_notional": "5000000"
+     },
+     "risk_thresholds": {
+      "danger_margin_level": "150",
+      "danger_residual_bps": "150",
+      "emergency_margin_level": "120",
+      "emergency_residual_bps": "400",
+      "kill_switch_margin_level": "100",
+      "max_daily_loss": "25000",
+      "max_spread_bps": "50",
+      "warning_margin_level": "200",
+      "warning_residual_bps": "50"
+     }
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/hedge-configs"
+    },
+    "title": "Effective limits and pair settings"
+   }
+  }
+ },
+ "GET /api/hedge/cycles": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "count": 1,
+     "cycles": [
+      {
+       "correlation_id": "a9ad5ec26e644dba",
+       "created_at": "2026-10-22T18:13:31.959999+00:00",
+       "cycle_id": "cyc-ba261b0aed6547e7",
+       "error": null,
+       "hedge": "PAPER_HYPERLIQUID:BTC",
+       "hedge_filled_quantity": "-5.00000",
+       "hedge_ratio": "0.9998500000",
+       "hedge_target_quantity": "-5",
+       "is_paper": true,
+       "objective": "QUOTE_PNL_NEUTRAL",
+       "pair": "BTC Delta perp -> Hyperliquid perp",
+       "residual_exposure": "0.0007500000000",
+       "source": "PAPER_DELTA:BTCUSD",
+       "source_filled_quantity": "5000",
+       "source_target_quantity": "5000",
+       "state": "COMPLETED",
+       "updated_at": "2026-10-22T18:13:32.069021+00:00"
+      }
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": {
+      "limit": 5
+     },
+     "path": "/api/hedge/cycles"
+    },
+    "title": "Hedge-cycle history"
+   }
+  }
+ },
+ "GET /api/hedge/cycles/{cycle_id}": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "correlation_id": "a9ad5ec26e644dba",
+     "created_at": "2026-10-22T18:13:31.959999+00:00",
+     "cycle_id": "cyc-ba261b0aed6547e7",
+     "error": null,
+     "events": [
+      {
+       "event": "validated",
+       "from_state": "CREATED",
+       "payload": {
+        "hedge": "PAPER_HYPERLIQUID:BTC",
+        "hedge_sizing": "1 base_unit = 1 BTC",
+        "source": "PAPER_DELTA:BTCUSD",
+        "source_sizing": "1 contract = 0.001 BTC"
+       },
+       "sequence": 1,
+       "timestamp": "2026-10-22T18:13:31.965723+00:00",
+       "to_state": "VALIDATED"
+      },
+      {
+       "event": "awaiting_market_data",
+       "from_state": "VALIDATED",
+       "payload": {},
+       "sequence": 2,
+       "timestamp": "2026-10-22T18:13:31.977088+00:00",
+       "to_state": "AWAITING_MARKET_DATA"
+      },
+      "... 7 more"
+     ],
+     "hedge": "PAPER_HYPERLIQUID:BTC",
+     "hedge_order_id": "paper_hyperliquid-ord-8a398a178d33443d",
+     "hedge_ratio": "0.9998500000",
+     "objective": "QUOTE_PNL_NEUTRAL",
+     "pair": "BTC Delta perp -> Hyperliquid perp",
+     "residual_exposure": "0.0007500000000",
+     "source": "PAPER_DELTA:BTCUSD",
+     "source_order_id": null,
+     "state": "COMPLETED",
+     "updated_at": "2026-10-22T18:13:32.069021+00:00"
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/hedge/cycles/cyc-ba261b0aed6547e7"
+    },
+    "title": "One cycle with its transitions"
+   },
+   "404": {
+    "body": {
+     "detail": "unknown cycle 'cyc-does-not-exist'"
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/hedge/cycles/cyc-does-not-exist"
+    },
+    "title": "Unknown cycle"
+   }
+  }
+ },
+ "GET /api/hedge/rebalance/{mapping_name}": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "estimated_cost": "0.0000",
+     "hedge": "PAPER_HYPERLIQUID:BTC",
+     "hedge_quantity": "-5",
+     "hedge_ratio": "0.999850",
+     "needs_rebalance": false,
+     "pair": "BTC Delta perp -> Hyperliquid perp",
+     "reason": "residual 1.50 bps is within the 25 bps tolerance",
+     "rebalance_quantity": "0",
+     "residual_account_delta": "0.00075000",
+     "residual_bps": "1.5005",
+     "source": "PAPER_DELTA:BTCUSD",
+     "source_quantity": "5000",
+     "target_hedge_quantity": "-5",
+     "tolerance_bps": "25"
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/hedge/rebalance/BTC%20Delta%20perp%20-%3E%20Hyperliquid%20perp"
+    },
+    "title": "Does the pair need rebalancing?"
+   }
+  }
+ },
+ "GET /api/hedge/state-machine": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "exposed": [
+      "LEG_1_SUBMITTED",
+      "LEG_1_PARTIAL",
+      "... 8 more"
+     ],
+     "problems": [],
+     "states": [
+      "CREATED",
+      "VALIDATED",
+      "... 15 more"
+     ],
+     "terminal": [
+      "COMPLETED",
+      "FAILED"
+     ],
+     "transitions": {
+      "AWAITING_MARKET_DATA": [
+       "CALCULATED",
+       "EMERGENCY",
+       "... 2 more"
+      ],
+      "BOTH_FILLED": [
+       "COMPLETED",
+       "EMERGENCY",
+       "... 4 more"
+      ],
+      "CALCULATED": [
+       "EMERGENCY",
+       "FAILED",
+       "... 2 more"
+      ],
+      "COMPLETED": [],
+      "CREATED": [
+       "EMERGENCY",
+       "FAILED",
+       "... 2 more"
+      ],
+      "EMERGENCY": [
+       "COMPLETED",
+       "EMERGENCY",
+       "... 3 more"
+      ],
+      "FAILED": [],
+      "LEG_1_FILLED": [
+       "EMERGENCY",
+       "FAILED",
+       "... 2 more"
+      ],
+      "LEG_1_PARTIAL": [
+       "EMERGENCY",
+       "FAILED",
+       "... 4 more"
+      ],
+      "LEG_1_SUBMITTED": [
+       "EMERGENCY",
+       "FAILED",
+       "... 3 more"
+      ],
+      "LEG_2_PARTIAL": [
+       "BOTH_FILLED",
+       "EMERGENCY",
+       "... 4 more"
+      ],
+      "LEG_2_SUBMITTED": [
+       "BOTH_FILLED",
+       "EMERGENCY",
+       "... 3 more"
+      ],
+      "REBALANCING": [
+       "BOTH_FILLED",
+       "COMPLETED",
+       "... 4 more"
+      ],
+      "RECOVERY_REQUIRED": [
+       "COMPLETED",
+       "EMERGENCY",
+       "... 5 more"
+      ],
+      "RISK_APPROVED": [
+       "EMERGENCY",
+       "FAILED",
+       "... 2 more"
+      ],
+      "RISK_REDUCTION": [
+       "BOTH_FILLED",
+       "COMPLETED",
+       "... 3 more"
+      ],
+      "VALIDATED": [
+       "AWAITING_MARKET_DATA",
+       "CALCULATED",
+       "... 3 more"
+      ]
+     }
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/hedge/state-machine"
+    },
+    "title": "The state machine"
+   }
+  }
+ },
+ "GET /api/instrument-mappings": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "count": 4,
+     "mappings": [
+      {
+       "conversion": "1 BTCUSD contract (1 contract = 0.001 BTC) = 0.001 BTC base_unit (1 base_unit = 1 BTC)",
+       "enabled": true,
+       "hedge_key": "PAPER_HYPERLIQUID:BTC",
+       "hedge_sizing": "1 base_unit = 1 BTC",
+       "key": "PAPER_DELTA:BTCUSD->PAPER_HYPERLIQUID:BTC",
+       "max_notional": "2000000",
+       "name": "BTC Delta perp -> Hyperliquid perp",
+       "objective": "QUOTE_PNL_NEUTRAL",
+       "source_key": "PAPER_DELTA:BTCUSD",
+       "source_sizing": "1 contract = 0.001 BTC",
+       "target_ratio": "1.0",
+       "tolerance_bps": "25"
+      },
+      {
+       "conversion": "1 ETHUSD contract (1 contract = 0.01 ETH) = 0.01 ETH base_unit (1 base_unit = 1 ETH)",
+       "enabled": true,
+       "hedge_key": "PAPER_HYPERLIQUID:ETH",
+       "hedge_sizing": "1 base_unit = 1 ETH",
+       "key": "PAPER_DELTA:ETHUSD->PAPER_HYPERLIQUID:ETH",
+       "max_notional": "1000000",
+       "name": "ETH Delta perp -> Hyperliquid perp",
+       "objective": "BASE_ASSET_NEUTRAL",
+       "source_key": "PAPER_DELTA:ETHUSD",
+       "source_sizing": "1 contract = 0.01 ETH",
+       "target_ratio": "1.0",
+       "tolerance_bps": "30"
+      },
+      "... 2 more"
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/instrument-mappings"
+    },
+    "title": "Hedge pairs"
+   }
+  }
+ },
+ "GET /api/instruments": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "count": 8,
+     "instruments": [
+      {
+       "active": true,
+       "allow_long": true,
+       "allow_short": true,
+       "base_asset": "BTC",
+       "baseline_funding_rate": "-0.00003584385750823267",
+       "contract_multiplier": "1",
+       "contract_size": "0.001",
+       "display_name": "Bitcoin Perpetual futures, quoted, settled & margined in US Dollar",
+       "effective_initial_margin_rate": "0.005",
+       "effective_maintenance_margin_rate": "0.0025",
+       "effective_underlying_key": "BTC",
+       "fee_currency": "",
+       "funding_interval_hours": "8",
+       "funding_model": "PERPETUAL_FUNDING",
+       "initial_margin_rate": "0.005",
+       "initial_margin_scaling": "0.000000025",
+       "instrument_type": "PERPETUAL",
+       "is_inverse": false,
+       "key": "PAPER_DELTA:BTCUSD",
+       "maintenance_margin_rate": "0.0025",
+       "maintenance_margin_scaling": "0.0000000125",
+       "maker_fee_bps": "2",
+       "margin_model": "ISOLATED_LINEAR",
+       "margin_scaling_notional": "100000",
+       "max_leverage": "200",
+       "max_quantity": "125000",
+       "min_notional": "0",
+       "min_quantity": "1",
+       "price_precision": 1,
+       "price_source": "delta_india",
+       "quantity_precision": 0,
+       "quantity_step": "1",
+       "quantity_unit": "CONTRACT",
+       "quote_asset": "USD",
+       "settlement_asset": "USD",
+       "settlement_style": "LINEAR",
+       "sizing_description": "1 contract = 0.001 BTC",
+       "slippage_bps_per_unit_liquidity": "0",
+       "swap_long_points": "0",
+       "swap_short_points": "0",
+       "swap_triple_weekday": 2,
+       "symbol": "BTCUSD",
+       "taker_fee_bps": "5",
+       "tick_size": "0.5",
+       "tick_value": null,
+       "trading_hours": {
+        "always_open": true,
+        "sessions": [],
+        "timezone": "UTC"
+       },
+       "typical_spread_bps": "0.061",
+       "underlying_key": "BTC",
+       "units_per_contract": null,
+       "units_per_lot": null,
+       "units_per_quantity": "0.001",
+       "venue": "PAPER_DELTA",
+       "venue_instrument_id": "27",
+       "venue_kind": "PERPETUAL_EXCHANGE"
+      },
+      {
+       "active": true,
+       "allow_long": true,
+       "allow_short": true,
+       "base_asset": "ETH",
+       "baseline_funding_rate": "-0.0000012596768564217958",
+       "contract_multiplier": "1",
+       "contract_size": "0.01",
+       "display_name": "Ethereum Perpetual futures, quoted, settled & margined in US Dollar",
+       "effective_initial_margin_rate": "0.005",
+       "effective_maintenance_margin_rate": "0.0025",
+       "effective_underlying_key": "ETH",
+       "fee_currency": "",
+       "funding_interval_hours": "8",
+       "funding_model": "PERPETUAL_FUNDING",
+       "initial_margin_rate": "0.005",
+       "initial_margin_scaling": "0.00000004",
+       "instrument_type": "PERPETUAL",
+       "is_inverse": false,
+       "key": "PAPER_DELTA:ETHUSD",
+       "maintenance_margin_rate": "0.0025",
+       "maintenance_margin_scaling": "0.00000002",
+       "maker_fee_bps": "2",
+       "margin_model": "ISOLATED_LINEAR",
+       "margin_scaling_notional": "100000",
+       "max_leverage": "200",
+       "max_quantity": "162683",
+       "min_notional": "0",
+       "min_quantity": "1",
+       "price_precision": 2,
+       "price_source": "delta_india",
+       "quantity_precision": 0,
+       "quantity_step": "1",
+       "quantity_unit": "CONTRACT",
+       "quote_asset": "USD",
+       "settlement_asset": "USD",
+       "settlement_style": "LINEAR",
+       "sizing_description": "1 contract = 0.01 ETH",
+       "slippage_bps_per_unit_liquidity": "0",
+       "swap_long_points": "0",
+       "swap_short_points": "0",
+       "swap_triple_weekday": 2,
+       "symbol": "ETHUSD",
+       "taker_fee_bps": "5",
+       "tick_size": "0.05",
+       "tick_value": null,
+       "trading_hours": {
+        "always_open": true,
+        "sessions": [],
+        "timezone": "UTC"
+       },
+       "typical_spread_bps": "0.208",
+       "underlying_key": "ETH",
+       "units_per_contract": null,
+       "units_per_lot": null,
+       "units_per_quantity": "0.01",
+       "venue": "PAPER_DELTA",
+       "venue_instrument_id": "3136",
+       "venue_kind": "PERPETUAL_EXCHANGE"
+      },
+      "... 6 more"
+     ],
+     "venues": [
+      "PAPER_DELTA",
+      "PAPER_HYPERLIQUID"
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/instruments"
+    },
+    "title": "All instruments"
+   }
+  }
+ },
+ "GET /api/instruments/{key}": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "active": true,
+     "allow_long": true,
+     "allow_short": true,
+     "base_asset": "BTC",
+     "baseline_funding_rate": "-0.00003584385750823267",
+     "contract_multiplier": "1",
+     "contract_size": "0.001",
+     "display_name": "Bitcoin Perpetual futures, quoted, settled & margined in US Dollar",
+     "effective_initial_margin_rate": "0.005",
+     "effective_maintenance_margin_rate": "0.0025",
+     "effective_underlying_key": "BTC",
+     "fee_currency": "",
+     "funding_interval_hours": "8",
+     "funding_model": "PERPETUAL_FUNDING",
+     "initial_margin_rate": "0.005",
+     "initial_margin_scaling": "0.000000025",
+     "instrument_type": "PERPETUAL",
+     "is_inverse": false,
+     "key": "PAPER_DELTA:BTCUSD",
+     "maintenance_margin_rate": "0.0025",
+     "maintenance_margin_scaling": "0.0000000125",
+     "maker_fee_bps": "2",
+     "margin_model": "ISOLATED_LINEAR",
+     "margin_scaling_notional": "100000",
+     "max_leverage": "200",
+     "max_quantity": "125000",
+     "min_notional": "0",
+     "min_quantity": "1",
+     "price_precision": 1,
+     "price_source": "delta_india",
+     "quantity_precision": 0,
+     "quantity_step": "1",
+     "quantity_unit": "CONTRACT",
+     "quote_asset": "USD",
+     "settlement_asset": "USD",
+     "settlement_style": "LINEAR",
+     "sizing_description": "1 contract = 0.001 BTC",
+     "slippage_bps_per_unit_liquidity": "0",
+     "swap_long_points": "0",
+     "swap_short_points": "0",
+     "swap_triple_weekday": 2,
+     "symbol": "BTCUSD",
+     "taker_fee_bps": "5",
+     "tick_size": "0.5",
+     "tick_value": null,
+     "trading_hours": {
+      "always_open": true,
+      "sessions": [],
+      "timezone": "UTC"
+     },
+     "typical_spread_bps": "0.061",
+     "underlying_key": "BTC",
+     "units_per_contract": null,
+     "units_per_lot": null,
+     "units_per_quantity": "0.001",
+     "venue": "PAPER_DELTA",
+     "venue_instrument_id": "27",
+     "venue_kind": "PERPETUAL_EXCHANGE"
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/instruments/PAPER_DELTA:BTCUSD"
+    },
+    "title": "Delta BTC perpetual"
+   },
+   "404": {
+    "body": {
+     "detail": "\"unknown instrument 'NOPE:NOPE'; known: PAPER_DELTA:BTCUSD, PAPER_DELTA:ETHUSD, PAPER_DELTA:PAXGUSD, PAPER_DELTA:SOLUSD, PAPER_HYPERLIQUID:BTC, PAPER_HYPERLIQUID:ETH, PAPER_HYPERLIQUID:PAXG, PAPER_HYPERLIQUID:SOL\""
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/instruments/NOPE:NOPE"
+    },
+    "title": "Unknown instrument"
+   }
+  }
+ },
+ "GET /api/margin/history": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "count": 2,
+     "snapshots": [
+      {
+       "balance": "249816.19807442",
+       "equity": "249813.69844942",
+       "free_margin": "239602.41787129",
+       "maintenance_margin": "5105.64028906",
+       "margin_level": "2446.448283719264747747733035",
+       "open_positions": 1,
+       "timestamp": "2026-10-22T18:13:32.249224+00:00",
+       "unrealized_pnl": "-2.49962500",
+       "used_margin": "10211.28057813",
+       "venue": "PAPER_HYPERLIQUID"
+      },
+      {
+       "balance": "249795.81375000",
+       "equity": "249792.06375000",
+       "free_margin": "244602.01597559",
+       "maintenance_margin": "2595.02388721",
+       "margin_level": "4812.904901986112043481489167",
+       "open_positions": 1,
+       "timestamp": "2026-10-22T18:13:32.249132+00:00",
+       "unrealized_pnl": "-3.75000000",
+       "used_margin": "5190.04777441",
+       "venue": "PAPER_DELTA"
+      }
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": {
+      "limit": 5
+     },
+     "path": "/api/margin/history"
+    },
+    "title": "Margin snapshots"
+   }
+  }
+ },
+ "GET /api/market": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "available_scenarios": [
+      {
+       "description": "The real market, unmodified.",
+       "disconnect": false,
+       "freeze_feed": false,
+       "jump_probability": "0",
+       "latency_ms": 5,
+       "liquidity_multiplier": "1",
+       "scenario": "NORMAL",
+       "spread_multiplier": "1",
+       "volatility_multiplier": "1"
+      },
+      {
+       "description": "Real moves since activation x5, spreads x3, depth halved, occasional jumps.",
+       "disconnect": false,
+       "freeze_feed": false,
+       "jump_probability": "0.02",
+       "latency_ms": 25,
+       "liquidity_multiplier": "0.5",
+       "scenario": "HIGH_VOLATILITY",
+       "spread_multiplier": "3",
+       "volatility_multiplier": "5"
+      },
+      "... 5 more"
+     ],
+     "clock": "2026-10-22T12:34:25.491130+00:00",
+     "frames_applied": 1,
+     "fx": {
+      "USDC/USD": "0.99985000",
+      "USDT/USD": "0.99905500"
+     },
+     "overlays": {
+      "funding_overrides": {},
+      "price_shocks": {},
+      "scenarios": {
+       "GLOBAL": "NORMAL"
+      }
+     },
+     "replay": {
+      "frames": 500,
+      "position": 1
+     },
+     "source": "replay",
+     "underlyings": {
+      "BTC": "81688.12500000",
+      "ETH": "2399.52500000",
+      "PAXG": "4082.10000000",
+      "SOL": "104.31625000"
+     }
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/market"
+    },
+    "title": "Feed state"
+   }
+  }
+ },
+ "GET /api/market-data": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "clock": "2026-10-22T12:34:25.491130+00:00",
+     "count": 8,
+     "overlays": {
+      "funding_overrides": {},
+      "price_shocks": {},
+      "scenarios": {
+       "GLOBAL": "NORMAL"
+      }
+     },
+     "scenarios": {
+      "GLOBAL": "NORMAL"
+     },
+     "source": "replay",
+     "tickers": [
+      {
+       "ask": "81674.0",
+       "ask_size": "1467",
+       "bid": "81673.5",
+       "bid_size": "4899",
+       "funding_rate": "-0.000035807049829229345",
+       "is_stale": false,
+       "key": "PAPER_DELTA:BTCUSD",
+       "last": "81671.28490094",
+       "mid": "81673.75",
+       "next_funding_time": "2026-10-22T16:00:00+00:00",
+       "sequence": 3,
+       "spread": "0.5",
+       "spread_bps": "0.06121917996908431411561242137",
+       "symbol": "BTCUSD",
+       "timestamp": "2026-10-22T12:34:25.468000+00:00",
+       "venue": "PAPER_DELTA",
+       "volume": "14224.631000019723"
+      },
+      {
+       "ask": "2399.55",
+       "ask_size": "991",
+       "bid": "2399.45",
+       "bid_size": "6327",
+       "funding_rate": "-0.0000012596768564217958",
+       "is_stale": false,
+       "key": "PAPER_DELTA:ETHUSD",
+       "last": "2399.34405647",
+       "mid": "2399.50",
+       "next_funding_time": "2026-10-22T16:00:00+00:00",
+       "sequence": 3,
+       "spread": "0.10",
+       "spread_bps": "0.4167534903104813502813086060",
+       "symbol": "ETHUSD",
+       "timestamp": "2026-10-22T12:34:23.360000+00:00",
+       "venue": "PAPER_DELTA",
+       "volume": "303076.75999996136"
+      },
+      "... 6 more"
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/market-data"
+    },
+    "title": "Top of book, every instrument"
+   }
+  }
+ },
+ "GET /api/market-data/{key}/book": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "asks": [
+      {
+       "price": "81703",
+       "size": "0.96011"
+      },
+      {
+       "price": "81705",
+       "size": "0.28607"
+      },
+      "... 3 more"
+     ],
+     "bids": [
+      {
+       "price": "81702",
+       "size": "18.97870"
+      },
+      {
+       "price": "81701",
+       "size": "1.59804"
+      },
+      "... 3 more"
+     ],
+     "key": "PAPER_HYPERLIQUID:BTC",
+     "symbol": "BTC",
+     "timestamp": "2026-10-22T12:34:25.296000+00:00",
+     "venue": "PAPER_HYPERLIQUID"
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": {
+      "depth": 5
+     },
+     "path": "/api/market-data/PAPER_HYPERLIQUID:BTC/book"
+    },
+    "title": "Hyperliquid BTC book, 5 levels"
+   },
+   "503": {
+    "body": {
+     "detail": "no market data received for 'PAPER_HYPERLIQUID:AVAX'",
+     "instrument": "PAPER_HYPERLIQUID:AVAX"
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/market-data/PAPER_HYPERLIQUID:AVAX/book"
+    },
+    "title": "No real quote yet for the new coin"
+   }
+  }
+ },
+ "GET /api/orders": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "count": 2,
+     "orders": [
+      {
+       "average_price": "81702",
+       "client_order_id": "cli-c250b755d491454b",
+       "created_at": "2026-10-22T18:13:32.024078+00:00",
+       "cycle_id": "cyc-ba261b0aed6547e7",
+       "fees_paid": "183.80192558",
+       "filled_quantity": "5.00000",
+       "is_paper": true,
+       "leg": "HEDGE",
+       "order_id": "paper_hyperliquid-ord-8a398a178d33443d",
+       "order_type": "MARKET",
+       "price": null,
+       "quantity": "5",
+       "reference_price": "81702.5",
+       "reject_reason": null,
+       "side": "SELL",
+       "slippage": "-0.5",
+       "status": "FILLED",
+       "symbol": "BTC",
+       "venue": "PAPER_HYPERLIQUID"
+      },
+      {
+       "average_price": "81674.5",
+       "client_order_id": "cli-194d4c60e9994e66",
+       "created_at": "2026-10-22T18:13:31.895734+00:00",
+       "cycle_id": null,
+       "fees_paid": "204.18625000",
+       "filled_quantity": "5000",
+       "is_paper": true,
+       "leg": null,
+       "order_id": "paper_delta-ord-093eb0c57f9f46ff",
+       "order_type": "MARKET",
+       "price": null,
+       "quantity": "5000",
+       "reference_price": "81673.75",
+       "reject_reason": null,
+       "side": "BUY",
+       "slippage": "0.75",
+       "status": "FILLED",
+       "symbol": "BTCUSD",
+       "venue": "PAPER_DELTA"
+      }
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": {
+      "limit": 5
+     },
+     "path": "/api/orders"
+    },
+    "title": "Orders"
+   }
+  }
+ },
+ "GET /api/orders/fills": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "count": 2,
+     "fills": [
+      {
+       "exec_id": "exec-f3dfd61b9ae848ae",
+       "fee": "204.18625000",
+       "is_maker": false,
+       "order_id": "paper_delta-ord-093eb0c57f9f46ff",
+       "price": "81674.5",
+       "quantity": "5000",
+       "slippage": "0.75",
+       "timestamp": "2026-10-22T12:34:27.494438+00:00"
+      },
+      {
+       "exec_id": "exec-7cd25be8bae74781",
+       "fee": "183.80192558",
+       "is_maker": false,
+       "order_id": "paper_hyperliquid-ord-8a398a178d33443d",
+       "price": "81702",
+       "quantity": "5.00000",
+       "slippage": "0.5",
+       "timestamp": "2026-10-22T12:34:27.494438+00:00"
+      }
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": {
+      "limit": 5
+     },
+     "path": "/api/orders/fills"
+    },
+    "title": "Fills"
+   }
+  }
+ },
+ "GET /api/pnl": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "currency": "USD",
+     "pairs": [
+      {
+       "break_even_cost": "342.52019809",
+       "components": [
+        {
+         "amount": "-3.75000000",
+         "currency": "USD",
+         "explanation": "BTCUSD: price P&L -3.7500 USD at mark 81673.75 (FX shown separately)",
+         "name": "source_price_pnl"
+        },
+        {
+         "amount": "-204.18625000",
+         "currency": "USD",
+         "explanation": "BTCUSD: 1 fills at 5 bps taker",
+         "name": "source_fees"
+        },
+        "... 10 more"
+       ],
+       "consistent": true,
+       "currency": "USD",
+       "expected_pnl": "0",
+       "funding_paid": "0",
+       "funding_received": "55.46760249",
+       "fx_conversion_impact": "0.00037500",
+       "gross_pnl": "-6.25000000",
+       "net_funding": "55.46760249",
+       "net_pnl": "-348.76982309",
+       "pair": "BTC Delta perp -> Hyperliquid perp",
+       "realized_pnl": "0",
+       "scope": "BTC Delta perp -> Hyperliquid perp",
+       "slippage_cost": "-6.25000000",
+       "spread_cost": "-3.74962500",
+       "swap_financing": "0",
+       "timestamp": "2026-10-22T18:13:32.337352+00:00",
+       "total_costs": "-397.98780058",
+       "trading_fees": "-387.98817558",
+       "unrealized_pnl": "-6.24962500",
+       "worst_case_pnl": "0"
+      },
+      {
+       "break_even_cost": "0",
+       "components": [
+        {
+         "amount": "0",
+         "currency": "USD",
+         "explanation": "ETHUSD: price P&L 0.0000 USD at mark 2399.475 (FX shown separately)",
+         "name": "source_price_pnl"
+        },
+        {
+         "amount": "0",
+         "currency": "USD",
+         "explanation": "ETHUSD: 0 fills at 5 bps taker",
+         "name": "source_fees"
+        },
+        "... 10 more"
+       ],
+       "consistent": true,
+       "currency": "USD",
+       "expected_pnl": "0",
+       "funding_paid": "0",
+       "funding_received": "0",
+       "fx_conversion_impact": "0",
+       "gross_pnl": "0",
+       "net_funding": "0",
+       "net_pnl": "0",
+       "pair": "ETH Delta perp -> Hyperliquid perp",
+       "realized_pnl": "0",
+       "scope": "ETH Delta perp -> Hyperliquid perp",
+       "slippage_cost": "0",
+       "spread_cost": "0",
+       "swap_financing": "0",
+       "timestamp": "2026-10-22T18:13:32.337698+00:00",
+       "total_costs": "0",
+       "trading_fees": "0",
+       "unrealized_pnl": "0",
+       "worst_case_pnl": "0"
+      },
+      "... 2 more"
+     ],
+     "total_net_pnl": "-348.76982309"
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/pnl"
+    },
+    "title": "P&L attribution"
+   }
+  }
+ },
+ "GET /api/pnl/history": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "count": 4,
+     "records": [
+      {
+       "currency": "USD",
+       "funding_paid": "0",
+       "funding_received": "0",
+       "fx_impact": "0",
+       "gross_pnl": "0",
+       "net_pnl": "0",
+       "pair": "SOL Delta perp -> Hyperliquid perp",
+       "realized_pnl": "0",
+       "scope": "SOL Delta perp -> Hyperliquid perp",
+       "slippage_cost": "0",
+       "spread_cost": "0",
+       "swap_financing": "0",
+       "timestamp": "2026-10-22T18:13:32.265663+00:00",
+       "trading_fees": "0",
+       "unrealized_pnl": "0"
+      },
+      {
+       "currency": "USD",
+       "funding_paid": "0",
+       "funding_received": "0",
+       "fx_impact": "0",
+       "gross_pnl": "0",
+       "net_pnl": "0",
+       "pair": "PAXG Delta perp -> Hyperliquid perp",
+       "realized_pnl": "0",
+       "scope": "PAXG Delta perp -> Hyperliquid perp",
+       "slippage_cost": "0",
+       "spread_cost": "0",
+       "swap_financing": "0",
+       "timestamp": "2026-10-22T18:13:32.263586+00:00",
+       "trading_fees": "0",
+       "unrealized_pnl": "0"
+      },
+      "... 2 more"
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": {
+      "limit": 5
+     },
+     "path": "/api/pnl/history"
+    },
+    "title": "P&L snapshots"
+   }
+  }
+ },
+ "GET /api/portfolio": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "actions": [],
+     "aggregate_equity": "499605.76",
+     "aggregate_fees": "387.99",
+     "aggregate_free_margin": "484204.43",
+     "aggregate_funding_per_day": "166.40",
+     "aggregate_liquidation_risk": "0.591710",
+     "aggregate_margin": "15401.33",
+     "allows_new_trades": true,
+     "breaches": [],
+     "breaching_pairs": [],
+     "concentration_pct": "100.00",
+     "concentration_underlying": "BTC",
+     "currency": "USD",
+     "currency_exposure": {
+      "USD": "408368.75",
+      "USDC": "-408512.50"
+     },
+     "exposure_by_underlying": {
+      "BTC": "408368.75",
+      "ETH": "0.00",
+      "PAXG": "0.00",
+      "SOL": "0.00"
+     },
+     "exposure_by_venue": {
+      "PAPER_DELTA": "408368.75",
+      "PAPER_HYPERLIQUID": "408451.22"
+     },
+     "gross_notional": "816819.97",
+     "level": "NORMAL",
+     "margin_utilization_pct": "3.08",
+     "net_exposure": "61.28",
+     "net_exposure_pct": "0.0075",
+     "pair_count": 4,
+     "portfolio_max_loss": "36.26",
+     "portfolio_pnl": "-6.25",
+     "realized_pnl": "0.00",
+     "timestamp": "2026-10-22T18:13:32.218526+00:00",
+     "total_hedge_exposure": "408451.22",
+     "total_source_exposure": "408368.75",
+     "unrealized_pnl": "-6.25",
+     "worst_margin_level": "2446.45"
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/portfolio"
+    },
+    "title": "Portfolio"
+   }
+  }
+ },
+ "GET /api/positions": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "count": 2,
+     "currency": "USD",
+     "positions": [
+      {
+       "account_delta": "5.000",
+       "average_entry": "81674.5",
+       "base_units": "5.000",
+       "fees_paid": "204.18625000",
+       "funding_paid": "0",
+       "funding_received": "0",
+       "is_paper": true,
+       "key": "PAPER_DELTA:BTCUSD",
+       "mark_price": "81673.75",
+       "notional_account": "408368.75000",
+       "notional_quote": "408368.75000",
+       "quantity": "5000",
+       "quantity_unit": "CONTRACT",
+       "quote_delta": "5.000",
+       "realized_pnl": "0",
+       "side": "LONG",
+       "sizing": "1 contract = 0.001 BTC",
+       "symbol": "BTCUSD",
+       "unrealized_pnl": "-3.75000",
+       "updated_at": "2026-10-22T18:13:31.903594+00:00",
+       "venue": "PAPER_DELTA"
+      },
+      {
+       "account_delta": "-4.9992500000000",
+       "average_entry": "81702",
+       "base_units": "-5.00000",
+       "fees_paid": "183.80192558",
+       "funding_paid": "0",
+       "funding_received": "0",
+       "is_paper": true,
+       "key": "PAPER_HYPERLIQUID:BTC",
+       "mark_price": "81702.5",
+       "notional_account": "-408451.22312500000000",
+       "notional_quote": "-408512.500000",
+       "quantity": "-5.00000",
+       "quantity_unit": "BASE_UNIT",
+       "quote_delta": "-5.00000",
+       "realized_pnl": "0",
+       "side": "SHORT",
+       "sizing": "1 base_unit = 1 BTC",
+       "symbol": "BTC",
+       "unrealized_pnl": "-2.49962500000000",
+       "updated_at": "2026-10-22T18:13:32.031780+00:00",
+       "venue": "PAPER_HYPERLIQUID"
+      }
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/positions"
+    },
+    "title": "Positions"
+   }
+  }
+ },
+ "GET /api/ready": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "database": true,
+     "detail": "ready",
+     "ready": true,
+     "venues": {
+      "PAPER_DELTA": true,
+      "PAPER_HYPERLIQUID": true
+     }
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/ready"
+    },
+    "title": "Readiness"
+   }
+  }
+ },
+ "GET /api/reconciliation": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "checked_venues": [
+      "PAPER_DELTA",
+      "PAPER_HYPERLIQUID"
+     ],
+     "database_positions": 2,
+     "discrepancies": [],
+     "has_critical": false,
+     "is_clean": true,
+     "issue_counts": {},
+     "timestamp": "2026-10-22T18:13:32.450490+00:00",
+     "unreachable_venues": [],
+     "venue_positions": 2
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/reconciliation"
+    },
+    "title": "Three-way reconciliation"
+   }
+  }
+ },
+ "GET /api/reconciliation/records": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "clean": true,
+     "critical": false,
+     "venues": [
+      {
+       "clean": true,
+       "critical": false,
+       "discrepancies": [],
+       "fills_checked": 1,
+       "funding_checked": 1,
+       "venue": "PAPER_DELTA"
+      },
+      {
+       "clean": true,
+       "critical": false,
+       "discrepancies": [],
+       "fills_checked": 1,
+       "funding_checked": 1,
+       "venue": "PAPER_HYPERLIQUID"
+      }
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/reconciliation/records"
+    },
+    "title": "Fills and funding against venue records"
+   }
+  }
+ },
+ "GET /api/risk": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "count": 4,
+     "pairs": [
+      {
+       "actions": [],
+       "basis_bps": "-2.0192",
+       "breaches": [],
+       "currency": "USD",
+       "daily_pnl": "0.00",
+       "funding_risk_per_day": "166.4028",
+       "hedge": "PAPER_HYPERLIQUID:BTC",
+       "hedge_liquidation_price": "130047",
+       "hedge_margin_level": "2446.45",
+       "hedge_notional": "408451.22",
+       "hedge_ratio": "0.999850",
+       "is_tradable": true,
+       "level": "NORMAL",
+       "liquidity_risk_bps": "0.1224",
+       "max_tolerable_move": "0.59170958",
+       "net_notional": "-82.47",
+       "pair": "BTC Delta perp -> Hyperliquid perp",
+       "realized_pnl": "0.00",
+       "residual_bps": "1.5005",
+       "residual_delta": "0.00075000",
+       "source": "PAPER_DELTA:BTCUSD",
+       "source_liquidation_price": "31918.9",
+       "source_margin_level": "4812.90",
+       "source_notional": "408368.75",
+       "timestamp": "2026-10-22T18:13:32.171597+00:00",
+       "total_margin": "15401.33",
+       "unrealized_pnl": "-6.25"
+      },
+      {
+       "actions": [],
+       "basis_bps": "1.1876",
+       "breaches": [],
+       "currency": "USD",
+       "daily_pnl": "0.00",
+       "funding_risk_per_day": "0.0000",
+       "hedge": "PAPER_HYPERLIQUID:ETH",
+       "hedge_liquidation_price": null,
+       "hedge_margin_level": "2446.45",
+       "hedge_notional": "0.00",
+       "hedge_ratio": "0.000000",
+       "is_tradable": true,
+       "level": "NORMAL",
+       "liquidity_risk_bps": "0.4167",
+       "max_tolerable_move": null,
+       "net_notional": "0.00",
+       "pair": "ETH Delta perp -> Hyperliquid perp",
+       "realized_pnl": "0.00",
+       "residual_bps": "0.0000",
+       "residual_delta": "0",
+       "source": "PAPER_DELTA:ETHUSD",
+       "source_liquidation_price": null,
+       "source_margin_level": "4812.90",
+       "source_notional": "0.00",
+       "timestamp": "2026-10-22T18:13:32.175618+00:00",
+       "total_margin": "0.00",
+       "unrealized_pnl": "0.00"
+      },
+      "... 2 more"
+     ],
+     "worst_level": "NORMAL"
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/risk"
+    },
+    "title": "Risk, every pair"
+   }
+  }
+ },
+ "GET /api/risk/events/log": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "count": 0,
+     "events": []
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": {
+      "limit": 5
+     },
+     "path": "/api/risk/events/log"
+    },
+    "title": "Risk events"
+   }
+  }
+ },
+ "GET /api/risk/statistics": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "min_samples": 30,
+     "pairs": [
+      {
+       "applied": {
+        "beta": "0.9782613240482053313247260753",
+        "correlation": "0.9944974571",
+        "hedge_daily_vol": "0.0163975643",
+        "residual_daily_vol": "0.001689775509776930507671891528",
+        "source_daily_vol": "0.0161298582"
+       },
+       "beta": "0.9782613240482053313247260753",
+       "beta_is_distinguishable_from_one": true,
+       "beta_standard_error": "0.004608553852812856005194061949",
+       "correlation": "0.9944974571",
+       "estimated": true,
+       "hedge": {
+        "daily_drift": "-0.0059664883",
+        "daily_volatility": "0.0163975643",
+        "is_reliable": true,
+        "key": "PAPER_HYPERLIQUID:BTC",
+        "note": "500 samples averaging 304.135s apart, normalised to one day",
+        "sample_seconds": 304.13498887599997,
+        "samples": 500
+       },
+       "is_reliable": true,
+       "note": "estimated from 500 paired samples at 300s intervals",
+       "overlapping_samples": 500,
+       "pair": "BTC Delta perp -> Hyperliquid perp",
+       "provenance": "estimated from 500 paired samples at 300s intervals",
+       "source": {
+        "daily_drift": "-0.0061079589",
+        "daily_volatility": "0.0161298582",
+        "is_reliable": true,
+        "key": "PAPER_DELTA:BTCUSD",
+        "note": "500 samples averaging 304.135s apart, normalised to one day",
+        "sample_seconds": 304.13498887599997,
+        "samples": 500
+       }
+      },
+      {
+       "applied": {
+        "beta": "0.9912948005365846957403058170",
+        "correlation": "0.9948968142",
+        "hedge_daily_vol": "0.0219962786",
+        "residual_daily_vol": "0.002211336877469144536219419070",
+        "source_daily_vol": "0.0219166413"
+       },
+       "beta": "0.9912948005365846957403058170",
+       "beta_is_distinguishable_from_one": false,
+       "beta_standard_error": "0.004495941944627970196443568820",
+       "correlation": "0.9948968142",
+       "estimated": true,
+       "hedge": {
+        "daily_drift": "-0.009963496",
+        "daily_volatility": "0.0219962786",
+        "is_reliable": true,
+        "key": "PAPER_HYPERLIQUID:ETH",
+        "note": "500 samples averaging 304.135s apart, normalised to one day",
+        "sample_seconds": 304.13498887599997,
+        "samples": 500
+       },
+       "is_reliable": true,
+       "note": "estimated from 500 paired samples at 300s intervals",
+       "overlapping_samples": 500,
+       "pair": "ETH Delta perp -> Hyperliquid perp",
+       "provenance": "estimated from 500 paired samples at 300s intervals",
+       "source": {
+        "daily_drift": "-0.009946354",
+        "daily_volatility": "0.0219166413",
+        "is_reliable": true,
+        "key": "PAPER_DELTA:ETHUSD",
+        "note": "500 samples averaging 304.135s apart, normalised to one day",
+        "sample_seconds": 304.13498887599997,
+        "samples": 500
+       }
+      },
+      "... 2 more"
+     ],
+     "sample_counts": {
+      "PAPER_DELTA:BTCUSD": 500,
+      "PAPER_DELTA:ETHUSD": 500,
+      "PAPER_DELTA:PAXGUSD": 500,
+      "PAPER_DELTA:SOLUSD": 500,
+      "PAPER_HYPERLIQUID:BTC": 500,
+      "PAPER_HYPERLIQUID:ETH": 500,
+      "PAPER_HYPERLIQUID:PAXG": 500,
+      "PAPER_HYPERLIQUID:SOL": 500
+     },
+     "sample_seconds": 300.0,
+     "window": 500
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/risk/statistics"
+    },
+    "title": "Measured volatility, correlation, beta"
+   }
+  }
+ },
+ "GET /api/risk/{mapping_name}": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "actions": [],
+     "basis_bps": "-2.0192",
+     "breaches": [],
+     "currency": "USD",
+     "daily_pnl": "0.00",
+     "funding_risk_per_day": "166.4028",
+     "hedge": "PAPER_HYPERLIQUID:BTC",
+     "hedge_liquidation_price": "130047",
+     "hedge_margin_level": "2446.45",
+     "hedge_notional": "408451.22",
+     "hedge_ratio": "0.999850",
+     "is_tradable": true,
+     "level": "NORMAL",
+     "liquidity_risk_bps": "0.1224",
+     "max_tolerable_move": "0.59170958",
+     "net_notional": "-82.47",
+     "pair": "BTC Delta perp -> Hyperliquid perp",
+     "realized_pnl": "0.00",
+     "residual_bps": "1.5005",
+     "residual_delta": "0.00075000",
+     "source": "PAPER_DELTA:BTCUSD",
+     "source_liquidation_price": "31918.9",
+     "source_margin_level": "4812.90",
+     "source_notional": "408368.75",
+     "timestamp": "2026-10-22T18:13:32.198244+00:00",
+     "total_margin": "15401.33",
+     "unrealized_pnl": "-6.25"
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/risk/BTC%20Delta%20perp%20-%3E%20Hyperliquid%20perp"
+    },
+    "title": "Risk, one pair"
+   },
+   "404": {
+    "body": {
+     "detail": "\"unknown hedge mapping named 'no-such-pair'\""
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/risk/no-such-pair"
+    },
+    "title": "Unknown pair"
+   }
+  }
+ },
+ "GET /api/scenarios": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "scenarios": [
+      {
+       "description": "Open a perpetual position and hedge it cleanly.",
+       "key": "A",
+       "name": "Normal BTC hedge"
+      },
+      {
+       "description": "Four pairs whose contract-to-coin conversions differ.",
+       "key": "B",
+       "name": "Different contract multipliers"
+      },
+      "... 8 more"
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/scenarios"
+    },
+    "title": "Scenarios"
+   }
+  }
+ },
+ "GET /api/scenarios/history": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "runs": [
+      {
+       "finished_at": "2026-10-22T18:13:33.178863+00:00",
+       "passed": true,
+       "scenario": "D",
+       "seed": 20260908,
+       "started_at": "2026-10-22T18:13:32.921482+00:00",
+       "status": "PASSED",
+       "summary": "Leg 2 was rejected with leg 1 already on the book. The cycle routed to RECOVERY_REQUIRED, rebalanced and completed with 1.50 bps residual."
+      }
+     ]
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": {
+      "limit": 3
+     },
+     "path": "/api/scenarios/history"
+    },
+    "title": "Scenario history"
+   }
+  }
+ },
+ "GET /api/system/status": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "app": "HedgeLab",
+     "armed_faults": [],
+     "database_connected": true,
+     "emergency_mode": false,
+     "environment": "test",
+     "hard_limit_breaches": [],
+     "instruments": 8,
+     "kill_switch_engaged": false,
+     "live_adapters_registered": 0,
+     "mappings": 4,
+     "market_clock": "2026-10-22T12:34:25.491130+00:00",
+     "market_data_source": "replay",
+     "market_overlays": {
+      "funding_overrides": {},
+      "price_shocks": {},
+      "scenarios": {
+       "GLOBAL": "NORMAL"
+      }
+     },
+     "market_scenarios": {
+      "GLOBAL": "NORMAL"
+     },
+     "paper_only": true,
+     "paused_pairs": [],
+     "trading_mode": "PAPER",
+     "trading_paused": false,
+     "venues": [
+      {
+       "connected": true,
+       "hard_limits": {
+        "breaches": 0,
+        "max_daily_loss": "100000",
+        "max_order_notional": "3500000",
+        "max_orders_per_minute": 60,
+        "max_position_notional": "5000000"
+       },
+       "instruments": 4,
+       "kind": "PERPETUAL_EXCHANGE",
+       "margin_level": "999999",
+       "open_positions": 0,
+       "paper": true,
+       "venue": "PAPER_DELTA"
+      },
+      {
+       "connected": true,
+       "hard_limits": {
+        "breaches": 0,
+        "max_daily_loss": "100000",
+        "max_order_notional": "3500000",
+        "max_orders_per_minute": 60,
+        "max_position_notional": "5000000"
+       },
+       "instruments": 4,
+       "kind": "PERPETUAL_EXCHANGE",
+       "margin_level": "999999",
+       "open_positions": 0,
+       "paper": true,
+       "venue": "PAPER_HYPERLIQUID"
+      }
+     ],
+     "version": "1.0.0",
+     "watchdog": {
+      "detail": "no watchdog has checked in",
+      "running": false
+     }
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/system/status"
+    },
+    "title": "System status"
+   }
+  }
+ },
+ "PATCH /api/portfolio/limits": {
+  "error_requests": [],
+  "requests": {
+   "Portfolio limits": {
+    "max_concentration_pct": "60"
+   }
+  },
+  "responses": {
+   "200": {
+    "body": {
+     "max_aggregate_margin_utilization": "70",
+     "max_concentration_pct": "60",
+     "max_currency_exposure": "1000000",
+     "max_daily_loss": "25000",
+     "max_net_exposure_pct": "15",
+     "max_total_notional": "5000000"
+    },
+    "request": {
+     "body": {
+      "max_concentration_pct": "60"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/portfolio/limits"
+    },
+    "title": "Portfolio limits"
+   }
+  }
+ },
+ "PATCH /api/risk/thresholds": {
+  "error_requests": [],
+  "requests": {
+   "Tighten the warning margin level": {
+    "warning_margin_level": "200"
+   }
+  },
+  "responses": {
+   "200": {
+    "body": {
+     "danger_margin_level": "150",
+     "danger_residual_bps": "150",
+     "emergency_margin_level": "120",
+     "emergency_residual_bps": "400",
+     "kill_switch_margin_level": "100",
+     "max_daily_loss": "25000",
+     "max_spread_bps": "50",
+     "warning_margin_level": "200",
+     "warning_residual_bps": "50"
+    },
+    "request": {
+     "body": {
+      "warning_margin_level": "200"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/risk/thresholds"
+    },
+    "title": "Tighten the warning margin level"
+   }
+  }
+ },
+ "POST /api/backtest/run": {
+  "error_requests": [
+   "Backtest an unknown pair"
+  ],
+  "requests": {
+   "Backtest an unknown pair": {
+    "mapping_name": "no-such-pair"
+   },
+   "Backtest the BTC pair on real history": {
+    "book_impact": true,
+    "mapping_name": "BTC Delta perp -> Hyperliquid perp",
+    "source_quantity": "1000",
+    "steps": 0,
+    "target_ratio": "1"
+   }
+  },
+  "responses": {
+   "200": {
+    "body": {
+     "config": {
+      "days": "29.958",
+      "hedge": "PAPER_HYPERLIQUID:BTC",
+      "objective": "QUOTE_PNL_NEUTRAL",
+      "rebalance_every": 1,
+      "source": "PAPER_DELTA:BTCUSD",
+      "source_quantity": "1000",
+      "step_seconds": "3600",
+      "steps": 719,
+      "tolerance_bps": "25"
+     },
+     "data": {
+      "end": "2026-10-22T11:00:00+00:00",
+      "execution": "impact curves from 500 recorded books",
+      "funding": "real settled funding, each venue on its own clock",
+      "prices": "real hourly candle closes, both venues",
+      "start": "2026-09-22T12:00:00+00:00",
+      "unmeasured_trades": 0
+     },
+     "final_net_pnl": "275.8684",
+     "funding_settlements": 809,
+     "gross_drawdown": "-118.7222",
+     "max_drawdown": "-107.4416",
+     "max_residual_bps": "1.5019",
+     "mean_residual_bps": "1.5002",
+     "peak_margin": "2615.72",
+     "rebalances": 0,
+     "risk_reduction_pct": "98.29",
+     "summary": "719 real hours (~30.0d), 0 rebalance(s): net 275.87 (funding 302.84, fees 81.73, slippage 0.79); residual mean 1.50 bps, max 1.50 bps; price drawdown 118.72 versus 6959.00 unhedged (98.3% removed).",
+     "total_fees": "81.7336",
+     "total_funding": "302.8357",
+     "total_slippage": "0.7899",
+     "unhedged_max_drawdown": "6959.0000",
+     "unhedged_pnl": "-4303.2632"
+    },
+    "request": {
+     "body": {
+      "book_impact": true,
+      "mapping_name": "BTC Delta perp -> Hyperliquid perp",
+      "source_quantity": "1000",
+      "steps": 0,
+      "target_ratio": "1"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/backtest/run"
+    },
+    "title": "Backtest the BTC pair on real history"
+   },
+   "404": {
+    "body": {
+     "detail": "unknown hedge mapping named 'no-such-pair'"
+    },
+    "request": {
+     "body": {
+      "mapping_name": "no-such-pair"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/backtest/run"
+    },
+    "title": "Backtest an unknown pair"
+   }
+  }
+ },
+ "POST /api/emergency/apply": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "applied": [],
+     "detail": "risk level requires no action",
+     "level": "NORMAL"
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": {
+      "mapping_name": "BTC Delta perp -> Hyperliquid perp"
+     },
+     "path": "/api/emergency/apply"
+    },
+    "title": "Apply prescribed actions"
+   }
+  }
+ },
+ "POST /api/emergency/kill-switch": {
+  "error_requests": [
+   "Kill switch without confirmation"
+  ],
+  "requests": {
+   "Engage the kill switch": {
+    "reason": "API example"
+   },
+   "Kill switch without confirmation": {
+    "reason": "API example"
+   }
+  },
+  "responses": {
+   "200": {
+    "body": {
+     "engaged": true,
+     "flatten_result": "flattened successfully with 2 closing order(s)",
+     "flattened": true,
+     "orders_cancelled": 0,
+     "reason": "API example"
+    },
+    "request": {
+     "body": {
+      "reason": "API example"
+     },
+     "headers": {
+      "X-Confirm-Action": "CONFIRM"
+     },
+     "params": null,
+     "path": "/api/emergency/kill-switch"
+    },
+    "title": "Engage the kill switch"
+   },
+   "428": {
+    "body": {
+     "detail": "this action is irreversible; resend with the header X-Confirm-Action: CONFIRM"
+    },
+    "request": {
+     "body": {
+      "reason": "API example"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/emergency/kill-switch"
+    },
+    "title": "Kill switch without confirmation"
+   }
+  }
+ },
+ "POST /api/fault-injection": {
+  "error_requests": [],
+  "requests": {
+   "Arm a Hyperliquid rejection": {
+    "count": 1,
+    "kind": "ORDER_REJECTION",
+    "reason": "API example",
+    "venue": "PAPER_HYPERLIQUID"
+   },
+   "Disconnect Hyperliquid": {
+    "kind": "HYPERLIQUID_DISCONNECT"
+   }
+  },
+  "responses": {
+   "200": {
+    "body": {
+     "applied": false,
+     "armed": true,
+     "fault": {
+      "armed_at": "2026-10-22T18:13:32.413149+00:00",
+      "fired_count": 0,
+      "kind": "ORDER_REJECTION",
+      "last_fired_at": null,
+      "leg": null,
+      "magnitude": "0.5",
+      "probability": "1",
+      "reason": "API example",
+      "remaining": 1,
+      "symbol": null,
+      "venue": "PAPER_HYPERLIQUID"
+     },
+     "kind": "ORDER_REJECTION"
+    },
+    "request": {
+     "body": {
+      "count": 1,
+      "kind": "ORDER_REJECTION",
+      "reason": "API example",
+      "venue": "PAPER_HYPERLIQUID"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/fault-injection"
+    },
+    "title": "Arm a Hyperliquid rejection"
+   }
+  }
+ },
+ "POST /api/fault-injection/reconnect/{venue}": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "connected": true,
+     "venue": "PAPER_HYPERLIQUID"
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/fault-injection/reconnect/PAPER_HYPERLIQUID"
+    },
+    "title": "Reconnect Hyperliquid"
+   }
+  }
+ },
+ "POST /api/funding/settle": {
+  "error_requests": [],
+  "requests": {
+   "Settle 8 hours of funding": {
+    "hours": "8"
+   }
+  },
+  "responses": {
+   "200": {
+    "body": {
+     "accruals": [
+      {
+       "amount": "14.62248018",
+       "currency": "USD",
+       "kind": "FUNDING",
+       "rate": "-0.000035807049829229345",
+       "symbol": "BTCUSD",
+       "timestamp": "2026-10-22T12:34:27.494438+00:00",
+       "venue": "PAPER_DELTA"
+      },
+      {
+       "amount": "40.84512231",
+       "currency": "USD",
+       "kind": "FUNDING",
+       "rate": "0.0000125",
+       "symbol": "BTC",
+       "timestamp": "2026-10-22T12:34:27.494438+00:00",
+       "venue": "PAPER_HYPERLIQUID"
+      }
+     ],
+     "count": 2
+    },
+    "request": {
+     "body": {
+      "hours": "8"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/funding/settle"
+    },
+    "title": "Settle 8 hours of funding"
+   }
+  }
+ },
+ "POST /api/hedge/calculate": {
+  "error_requests": [
+   "Invalid objective"
+  ],
+  "requests": {
+   "Invalid objective": {
+    "hedge_key": "PAPER_HYPERLIQUID:BTC",
+    "objective": "MAKE_MONEY",
+    "source_key": "PAPER_DELTA:BTCUSD",
+    "source_quantity": "5000"
+   },
+   "Size a hedge for 5000 Delta contracts": {
+    "hedge_key": "PAPER_HYPERLIQUID:BTC",
+    "objective": "QUOTE_PNL_NEUTRAL",
+    "source_key": "PAPER_DELTA:BTCUSD",
+    "source_quantity": "5000",
+    "use_live_positions": false
+   }
+  },
+  "responses": {
+   "200": {
+    "body": {
+     "break_even_move_pct": "0.04562119",
+     "conversion_ratio": "0.001",
+     "estimated_fees": "183.80305041",
+     "estimated_slippage": "0",
+     "estimated_spread_cost": "2.49962500",
+     "expected_pnl": "-19.89986793",
+     "funding_impact_per_day": "166.40280748",
+     "hedge": "PAPER_HYPERLIQUID:BTC",
+     "hedge_ratio": "1",
+     "is_executable": true,
+     "margin_requirement": "10211.28057813",
+     "max_safe_quantity": "1000000000",
+     "min_executable_quantity": "0.00001",
+     "notional_exposure": "816819.973125000",
+     "objective": "QUOTE_PNL_NEUTRAL",
+     "rebalance_quantity": "-5",
+     "required_quantity": "-5.000",
+     "residual_bps": "1.5005",
+     "residual_quote_delta": "0.000",
+     "rounded_quantity": "-5",
+     "source": "PAPER_DELTA:BTCUSD",
+     "steps": [
+      {
+       "formula": "BTCUSD mid / BTC mid",
+       "label": "Market data",
+       "unit": "",
+       "value": "81673.75 USD / 81702.5 USDC"
+      },
+      {
+       "formula": "1 contract = 0.001 BTC  |  1 base_unit = 1 BTC",
+       "label": "Contract sizing",
+       "unit": "",
+       "value": "1 contract vs 1 base_unit"
+      },
+      "... 12 more"
+     ],
+     "target_ratio": "1",
+     "total_execution_cost": "186.30267541",
+     "warnings": [
+      "quote currencies differ (USD vs USDC); use ACCOUNT_CCY_PNL_NEUTRAL to include FX"
+     ],
+     "worst_case_pnl": "-22.19885680"
+    },
+    "request": {
+     "body": {
+      "hedge_key": "PAPER_HYPERLIQUID:BTC",
+      "objective": "QUOTE_PNL_NEUTRAL",
+      "source_key": "PAPER_DELTA:BTCUSD",
+      "source_quantity": "5000",
+      "use_live_positions": false
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/hedge/calculate"
+    },
+    "title": "Size a hedge for 5000 Delta contracts"
+   },
+   "422": {
+    "body": {
+     "detail": [
+      {
+       "ctx": {
+        "expected": "'BASE_ASSET_NEUTRAL', 'NOTIONAL_NEUTRAL', 'QUOTE_PNL_NEUTRAL', 'ACCOUNT_CCY_PNL_NEUTRAL', 'CUSTOM_RATIO', 'FUNDING_ADJUSTED', 'COST_ADJUSTED', 'RISK_WEIGHTED' or 'PARTIAL'"
+       },
+       "input": "MAKE_MONEY",
+       "loc": [
+        "body",
+        "objective"
+       ],
+       "msg": "Input should be 'BASE_ASSET_NEUTRAL', 'NOTIONAL_NEUTRAL', 'QUOTE_PNL_NEUTRAL', 'ACCOUNT_CCY_PNL_NEUTRAL', 'CUSTOM_RATIO', 'FUNDING_ADJUSTED', 'COST_ADJUSTED', 'RISK_WEIGHTED' or 'PARTIAL'",
+       "type": "enum"
+      }
+     ]
+    },
+    "request": {
+     "body": {
+      "hedge_key": "PAPER_HYPERLIQUID:BTC",
+      "objective": "MAKE_MONEY",
+      "source_key": "PAPER_DELTA:BTCUSD",
+      "source_quantity": "5000"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/hedge/calculate"
+    },
+    "title": "Invalid objective"
+   }
+  }
+ },
+ "POST /api/hedge/execute": {
+  "error_requests": [
+   "Hedging while the kill switch is on"
+  ],
+  "requests": {
+   "Hedge the open position": {
+    "mapping_name": "BTC Delta perp -> Hyperliquid perp",
+    "source_quantity": "0"
+   },
+   "Hedging while the kill switch is on": {
+    "mapping_name": "BTC Delta perp -> Hyperliquid perp",
+    "source_quantity": "1000"
+   }
+  },
+  "responses": {
+   "200": {
+    "body": {
+     "calculation": {
+      "break_even_move_pct": "0.04562119",
+      "conversion_ratio": "0.001",
+      "estimated_fees": "183.80305041",
+      "estimated_slippage": "0",
+      "estimated_spread_cost": "2.49962500",
+      "expected_pnl": "-19.89986793",
+      "funding_impact_per_day": "166.40280748",
+      "hedge": "PAPER_HYPERLIQUID:BTC",
+      "hedge_ratio": "1",
+      "is_executable": true,
+      "margin_requirement": "10211.28057813",
+      "max_safe_quantity": "122.29122",
+      "min_executable_quantity": "0.00001",
+      "notional_exposure": "816819.973125000",
+      "objective": "QUOTE_PNL_NEUTRAL",
+      "rebalance_quantity": "-5",
+      "required_quantity": "-5.0000",
+      "residual_bps": "1.5005",
+      "residual_quote_delta": "0.000",
+      "rounded_quantity": "-5",
+      "source": "PAPER_DELTA:BTCUSD",
+      "steps": [
+       {
+        "formula": "BTCUSD mid / BTC mid",
+        "label": "Market data",
+        "unit": "",
+        "value": "81673.75 USD / 81702.5 USDC"
+       },
+       {
+        "formula": "1 contract = 0.001 BTC  |  1 base_unit = 1 BTC",
+        "label": "Contract sizing",
+        "unit": "",
+        "value": "1 contract vs 1 base_unit"
+       },
+       "... 12 more"
+      ],
+      "target_ratio": "1.0",
+      "total_execution_cost": "186.30267541",
+      "warnings": [
+       "quote currencies differ (USD vs USDC); use ACCOUNT_CCY_PNL_NEUTRAL to include FX"
+      ],
+      "worst_case_pnl": "-24.17576827"
+     },
+     "cycle": {
+      "correlation_id": "a9ad5ec26e644dba",
+      "created_at": "2026-10-22T18:13:31.951515+00:00",
+      "cycle_id": "cyc-ba261b0aed6547e7",
+      "error": null,
+      "event_count": 9,
+      "hedge": "PAPER_HYPERLIQUID:BTC",
+      "hedge_filled_quantity": "-5.00000",
+      "hedge_leg_state": "FILLED",
+      "hedge_order_id": "paper_hyperliquid-ord-8a398a178d33443d",
+      "hedge_ratio": "0.9998500000",
+      "hedge_target_quantity": "-5",
+      "leg_imbalance": "0.00000",
+      "objective": "QUOTE_PNL_NEUTRAL",
+      "pair": "BTC Delta perp -> Hyperliquid perp",
+      "residual_exposure": "0.000750000000",
+      "source": "PAPER_DELTA:BTCUSD",
+      "source_filled_quantity": "5000",
+      "source_leg_state": "FILLED",
+      "source_order_id": null,
+      "source_target_quantity": "5000",
+      "state": "COMPLETED",
+      "updated_at": "2026-10-22T18:13:32.059039+00:00"
+     },
+     "hedge_order_id": "paper_hyperliquid-ord-8a398a178d33443d",
+     "messages": [],
+     "rebalance_order_ids": [],
+     "source_order_id": null,
+     "succeeded": true
+    },
+    "request": {
+     "body": {
+      "mapping_name": "BTC Delta perp -> Hyperliquid perp",
+      "source_quantity": "0"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/hedge/execute"
+    },
+    "title": "Hedge the open position"
+   },
+   "409": {
+    "body": {
+     "detail": "kill switch is engaged; trading is disabled"
+    },
+    "request": {
+     "body": {
+      "mapping_name": "BTC Delta perp -> Hyperliquid perp",
+      "source_quantity": "1000"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/hedge/execute"
+    },
+    "title": "Hedging while the kill switch is on"
+   }
+  }
+ },
+ "POST /api/hedge/open-position": {
+  "error_requests": [],
+  "requests": {
+   "Open 5000 contracts on Delta": {
+    "instrument_key": "PAPER_DELTA:BTCUSD",
+    "quantity": "5000"
+   }
+  },
+  "responses": {
+   "200": {
+    "body": {
+     "average_price": "81674.5",
+     "fees_paid": "204.18625000",
+     "filled_quantity": "5000",
+     "is_paper": true,
+     "order_id": "paper_delta-ord-093eb0c57f9f46ff",
+     "status": "FILLED"
+    },
+    "request": {
+     "body": {
+      "instrument_key": "PAPER_DELTA:BTCUSD",
+      "quantity": "5000"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/hedge/open-position"
+    },
+    "title": "Open 5000 contracts on Delta"
+   }
+  }
+ },
+ "POST /api/hedge/optimize": {
+  "error_requests": [],
+  "requests": {
+   "Search the lattice": {
+    "hedge_key": "PAPER_HYPERLIQUID:ETH",
+    "mode": "WEIGHTED",
+    "objective": "BASE_ASSET_NEUTRAL",
+    "search_steps": 3,
+    "source_key": "PAPER_DELTA:ETHUSD",
+    "source_quantity": "3737",
+    "use_live_positions": false
+   }
+  },
+  "responses": {
+   "200": {
+    "body": {
+     "calculation": {
+      "break_even_move_pct": "0.04707851",
+      "conversion_ratio": "0.01",
+      "estimated_fees": "40.34630366",
+      "estimated_slippage": "0",
+      "estimated_spread_cost": "1.86823472",
+      "expected_pnl": "-16.88119751",
+      "funding_impact_per_day": "25.33334087",
+      "hedge": "PAPER_HYPERLIQUID:ETH",
+      "hedge_ratio": "1.000008027829810008027829810",
+      "is_executable": true,
+      "margin_requirement": "3586.33810318",
+      "max_safe_quantity": "1000000000",
+      "min_executable_quantity": "0.0001",
+      "notional_exposure": "179326.83332949525000",
+      "objective": "BASE_ASSET_NEUTRAL",
+      "rebalance_quantity": "-37.3703",
+      "required_quantity": "-37.3703",
+      "residual_bps": "1.4198",
+      "residual_quote_delta": "-0.0003",
+      "rounded_quantity": "-37.3703",
+      "source": "PAPER_DELTA:ETHUSD",
+      "steps": [
+       {
+        "formula": "ETHUSD mid / ETH mid",
+        "label": "Market data",
+        "unit": "",
+        "value": "2399.475 USD / 2399.55 USDC"
+       },
+       {
+        "formula": "1 contract = 0.01 ETH  |  1 base_unit = 1 ETH",
+        "label": "Contract sizing",
+        "unit": "",
+        "value": "1 contract vs 1 base_unit"
+       },
+       "... 12 more"
+      ],
+      "target_ratio": "1",
+      "total_execution_cost": "42.21453838",
+      "warnings": [],
+      "worst_case_pnl": "-17.53019574"
+     },
+     "candidates": [
+      {
+       "capital_efficiency": "24.999218",
+       "execution_cost": "42.2145",
+       "funding_per_day": "25.3333",
+       "is_executable": true,
+       "liquidation_risk": "0.040000",
+       "margin": "3586.34",
+       "quantity": "-37.3703",
+       "residual_bps": "1.4198",
+       "score": "0.210526",
+       "slippage": "0.0000"
+      },
+      {
+       "capital_efficiency": "24.999218",
+       "execution_cost": "42.2144",
+       "funding_per_day": "25.3333",
+       "is_executable": true,
+       "liquidation_risk": "0.040000",
+       "margin": "3586.33",
+       "quantity": "-37.3702",
+       "residual_bps": "1.4465",
+       "score": "0.298245",
+       "slippage": "0.0000"
+      },
+      "... 5 more"
+     ],
+     "chosen_quantity": "-37.3703",
+     "exact_quantity": "-37.37",
+     "mode": "WEIGHTED",
+     "priority": "MIN_RESIDUAL",
+     "rationale": "weighted score over 7 lattice points selected -37.3703 (score 0.210526); weights residual=10, cost=3, funding=2, margin=1, liq=1, slip=1, capital=1"
+    },
+    "request": {
+     "body": {
+      "hedge_key": "PAPER_HYPERLIQUID:ETH",
+      "mode": "WEIGHTED",
+      "objective": "BASE_ASSET_NEUTRAL",
+      "search_steps": 3,
+      "source_key": "PAPER_DELTA:ETHUSD",
+      "source_quantity": "3737",
+      "use_live_positions": false
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/hedge/optimize"
+    },
+    "title": "Search the lattice"
+   }
+  }
+ },
+ "POST /api/hedge/rebalance/{mapping_name}": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "assessment": {
+      "estimated_cost": "0.0000",
+      "hedge": "PAPER_HYPERLIQUID:BTC",
+      "hedge_quantity": "-5",
+      "hedge_ratio": "0.999850",
+      "needs_rebalance": false,
+      "pair": "BTC Delta perp -> Hyperliquid perp",
+      "reason": "residual 1.50 bps is within the 25 bps tolerance",
+      "rebalance_quantity": "0",
+      "residual_account_delta": "0.00075000",
+      "residual_bps": "1.5005",
+      "source": "PAPER_DELTA:BTCUSD",
+      "source_quantity": "5000",
+      "target_hedge_quantity": "-5",
+      "tolerance_bps": "25"
+     },
+     "rebalanced": false
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/hedge/rebalance/BTC%20Delta%20perp%20-%3E%20Hyperliquid%20perp"
+    },
+    "title": "Rebalance the pair"
+   }
+  }
+ },
+ "POST /api/instrument-mappings": {
+  "error_requests": [],
+  "requests": {
+   "Create or replace a pair": {
+    "enabled": true,
+    "hedge_key": "PAPER_HYPERLIQUID:BTC",
+    "max_notional": "2000000",
+    "name": "BTC Delta perp -> Hyperliquid perp",
+    "objective": "QUOTE_PNL_NEUTRAL",
+    "source_key": "PAPER_DELTA:BTCUSD",
+    "target_ratio": "1.0",
+    "tolerance_bps": "25"
+   }
+  },
+  "responses": {
+   "200": {
+    "body": {
+     "enabled": true,
+     "key": "PAPER_DELTA:BTCUSD->PAPER_HYPERLIQUID:BTC",
+     "name": "BTC Delta perp -> Hyperliquid perp"
+    },
+    "request": {
+     "body": {
+      "enabled": true,
+      "hedge_key": "PAPER_HYPERLIQUID:BTC",
+      "max_notional": "2000000",
+      "name": "BTC Delta perp -> Hyperliquid perp",
+      "objective": "QUOTE_PNL_NEUTRAL",
+      "source_key": "PAPER_DELTA:BTCUSD",
+      "target_ratio": "1.0",
+      "tolerance_bps": "25"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/instrument-mappings"
+    },
+    "title": "Create or replace a pair"
+   }
+  }
+ },
+ "POST /api/instruments": {
+  "error_requests": [
+   "Instrument without a real feed"
+  ],
+  "requests": {
+   "Add a Hyperliquid coin": {
+    "base_asset": "AVAX",
+    "funding_interval_hours": "1",
+    "funding_model": "PERPETUAL_FUNDING",
+    "instrument_type": "PERPETUAL",
+    "max_leverage": "10",
+    "min_notional": "10",
+    "min_quantity": "0.01",
+    "price_precision": 3,
+    "price_source": "hyperliquid",
+    "quantity_precision": 2,
+    "quantity_step": "0.01",
+    "quantity_unit": "BASE_UNIT",
+    "quote_asset": "USDC",
+    "settlement_asset": "USDC",
+    "symbol": "AVAX",
+    "tick_size": "0.001",
+    "underlying_key": "AVAX",
+    "venue": "PAPER_HYPERLIQUID",
+    "venue_kind": "PERPETUAL_EXCHANGE"
+   },
+   "Instrument without a real feed": {
+    "base_asset": "WHEAT",
+    "instrument_type": "PERPETUAL",
+    "price_source": "made_up",
+    "quantity_unit": "CONTRACT",
+    "quote_asset": "USD",
+    "settlement_asset": "USD",
+    "symbol": "WHEAT",
+    "venue": "PAPER_DELTA",
+    "venue_kind": "PERPETUAL_EXCHANGE"
+   }
+  },
+  "responses": {
+   "200": {
+    "body": {
+     "active": true,
+     "allow_long": true,
+     "allow_short": true,
+     "base_asset": "AVAX",
+     "baseline_funding_rate": "0",
+     "contract_multiplier": "1",
+     "contract_size": "1",
+     "display_name": "",
+     "effective_initial_margin_rate": "0.1",
+     "effective_maintenance_margin_rate": "0.05",
+     "effective_underlying_key": "AVAX",
+     "fee_currency": "",
+     "funding_interval_hours": "1",
+     "funding_model": "PERPETUAL_FUNDING",
+     "initial_margin_rate": null,
+     "initial_margin_scaling": "0",
+     "instrument_type": "PERPETUAL",
+     "is_inverse": false,
+     "key": "PAPER_HYPERLIQUID:AVAX",
+     "maintenance_margin_rate": null,
+     "maintenance_margin_scaling": "0",
+     "maker_fee_bps": "2",
+     "margin_model": "ISOLATED_LINEAR",
+     "margin_scaling_notional": "0",
+     "max_leverage": "10",
+     "max_quantity": "1000000",
+     "min_notional": "10",
+     "min_quantity": "0.01",
+     "price_precision": 3,
+     "price_source": "hyperliquid",
+     "quantity_precision": 2,
+     "quantity_step": "0.01",
+     "quantity_unit": "BASE_UNIT",
+     "quote_asset": "USDC",
+     "settlement_asset": "USDC",
+     "settlement_style": "LINEAR",
+     "sizing_description": "1 base_unit = 1 AVAX",
+     "slippage_bps_per_unit_liquidity": "0",
+     "swap_long_points": "0",
+     "swap_short_points": "0",
+     "swap_triple_weekday": 2,
+     "symbol": "AVAX",
+     "taker_fee_bps": "5",
+     "tick_size": "0.001",
+     "tick_value": null,
+     "trading_hours": {
+      "always_open": true,
+      "sessions": [],
+      "timezone": "UTC"
+     },
+     "typical_spread_bps": "2",
+     "underlying_key": "AVAX",
+     "units_per_contract": null,
+     "units_per_lot": null,
+     "units_per_quantity": "1",
+     "venue": "PAPER_HYPERLIQUID",
+     "venue_instrument_id": "",
+     "venue_kind": "PERPETUAL_EXCHANGE"
+    },
+    "request": {
+     "body": {
+      "base_asset": "AVAX",
+      "funding_interval_hours": "1",
+      "funding_model": "PERPETUAL_FUNDING",
+      "instrument_type": "PERPETUAL",
+      "max_leverage": "10",
+      "min_notional": "10",
+      "min_quantity": "0.01",
+      "price_precision": 3,
+      "price_source": "hyperliquid",
+      "quantity_precision": 2,
+      "quantity_step": "0.01",
+      "quantity_unit": "BASE_UNIT",
+      "quote_asset": "USDC",
+      "settlement_asset": "USDC",
+      "symbol": "AVAX",
+      "tick_size": "0.001",
+      "underlying_key": "AVAX",
+      "venue": "PAPER_HYPERLIQUID",
+      "venue_kind": "PERPETUAL_EXCHANGE"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/instruments"
+    },
+    "title": "Add a Hyperliquid coin"
+   },
+   "422": {
+    "body": {
+     "detail": "price_source 'made_up' is not a real venue feed; use one of delta_india, hyperliquid"
+    },
+    "request": {
+     "body": {
+      "base_asset": "WHEAT",
+      "instrument_type": "PERPETUAL",
+      "price_source": "made_up",
+      "quantity_unit": "CONTRACT",
+      "quote_asset": "USD",
+      "settlement_asset": "USD",
+      "symbol": "WHEAT",
+      "venue": "PAPER_DELTA",
+      "venue_kind": "PERPETUAL_EXCHANGE"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/instruments"
+    },
+    "title": "Instrument without a real feed"
+   }
+  }
+ },
+ "POST /api/market/advance": {
+  "error_requests": [],
+  "requests": {
+   "Step the replay one frame": {
+    "steps": 1
+   }
+  },
+  "responses": {
+   "200": {
+    "body": {
+     "clock": "2026-10-22T12:34:27.494438+00:00",
+     "frames_applied": 1,
+     "requested": 1,
+     "underlyings": {
+      "BTC": "81688.12500000",
+      "ETH": "2399.51250000",
+      "PAXG": "4082.10000000",
+      "SOL": "104.31625000"
+     }
+    },
+    "request": {
+     "body": {
+      "steps": 1
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/market/advance"
+    },
+    "title": "Step the replay one frame"
+   }
+  }
+ },
+ "POST /api/market/stress": {
+  "error_requests": [
+   "Unknown scenario"
+  ],
+  "requests": {
+   "Unknown scenario": {
+    "scenario": "PANIC"
+   },
+   "Widen spreads (hypothetical)": {
+    "scenario": "SPREAD_WIDENING"
+   }
+  },
+  "responses": {
+   "200": {
+    "body": {
+     "active": {
+      "GLOBAL": "SPREAD_WIDENING"
+     },
+     "description": "Real spreads x20 and at least 100 bps, depth x0.4 -- execution cost shock.",
+     "scenario": "SPREAD_WIDENING",
+     "venue": "ALL"
+    },
+    "request": {
+     "body": {
+      "scenario": "SPREAD_WIDENING"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/market/stress"
+    },
+    "title": "Widen spreads (hypothetical)"
+   },
+   "422": {
+    "body": {
+     "detail": [
+      {
+       "ctx": {
+        "expected": "'NORMAL', 'HIGH_VOLATILITY', 'SPREAD_WIDENING', 'PRICE_GAP', 'STALE_DATA', 'LIQUIDITY_REDUCTION' or 'EXCHANGE_DISCONNECT'"
+       },
+       "input": "PANIC",
+       "loc": [
+        "body",
+        "scenario"
+       ],
+       "msg": "Input should be 'NORMAL', 'HIGH_VOLATILITY', 'SPREAD_WIDENING', 'PRICE_GAP', 'STALE_DATA', 'LIQUIDITY_REDUCTION' or 'EXCHANGE_DISCONNECT'",
+       "type": "enum"
+      }
+     ]
+    },
+    "request": {
+     "body": {
+      "scenario": "PANIC"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/market/stress"
+    },
+    "title": "Unknown scenario"
+   }
+  }
+ },
+ "POST /api/market/stress/funding-rate": {
+  "error_requests": [],
+  "requests": {
+   "Override a funding rate (hypothetical)": {
+    "instrument_key": "PAPER_DELTA:BTCUSD",
+    "rate": "0.0005"
+   }
+  },
+  "responses": {
+   "200": {
+    "body": {
+     "funding_rate": "0.0005",
+     "instrument": "PAPER_DELTA:BTCUSD"
+    },
+    "request": {
+     "body": {
+      "instrument_key": "PAPER_DELTA:BTCUSD",
+      "rate": "0.0005"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/market/stress/funding-rate"
+    },
+    "title": "Override a funding rate (hypothetical)"
+   }
+  }
+ },
+ "POST /api/market/stress/shock": {
+  "error_requests": [],
+  "requests": {
+   "Drop BTC 5% (hypothetical)": {
+    "pct_move": "-0.05",
+    "underlying": "BTC"
+   }
+  },
+  "responses": {
+   "200": {
+    "body": {
+     "pct_move": "-0.05",
+     "price": "77603.875",
+     "underlying": "BTC"
+    },
+    "request": {
+     "body": {
+      "pct_move": "-0.05",
+      "underlying": "BTC"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/market/stress/shock"
+    },
+    "title": "Drop BTC 5% (hypothetical)"
+   }
+  }
+ },
+ "POST /api/reconciliation/adopt": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "adopted": 2
+    },
+    "request": {
+     "body": null,
+     "headers": {
+      "X-Confirm-Action": "CONFIRM"
+     },
+     "params": null,
+     "path": "/api/reconciliation/adopt"
+    },
+    "title": "Adopt venue state"
+   },
+   "428": {
+    "body": {
+     "detail": "this action is irreversible; resend with the header X-Confirm-Action: CONFIRM"
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/reconciliation/adopt"
+    },
+    "title": "Adopt venue state without confirmation"
+   }
+  }
+ },
+ "POST /api/reconciliation/recover": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "cycles_needing_attention": [],
+     "notes": [
+      "state reconstructed cleanly: database, perpetual venue and broker agree"
+     ],
+     "orphaned_orders": [],
+     "reconciliation": {
+      "checked_venues": [
+       "PAPER_DELTA",
+       "PAPER_HYPERLIQUID"
+      ],
+      "database_positions": 2,
+      "discrepancies": [],
+      "has_critical": false,
+      "is_clean": true,
+      "issue_counts": {},
+      "timestamp": "2026-10-22T18:13:32.484762+00:00",
+      "unreachable_venues": [],
+      "venue_positions": 2
+     },
+     "reconstructed_cycles": [],
+     "required_actions": [],
+     "resumable": true
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/reconciliation/recover"
+    },
+    "title": "Restart recovery verdict"
+   }
+  }
+ },
+ "POST /api/risk/snapshot": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "margin_snapshots": 2,
+     "pnl_records": 4,
+     "risk_events": 0
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/risk/snapshot"
+    },
+    "title": "Persist a snapshot"
+   }
+  }
+ },
+ "POST /api/scenarios/run": {
+  "error_requests": [
+   "Unknown scenario"
+  ],
+  "requests": {
+   "Run scenario D: second-leg rejection": {
+    "scenario": "D"
+   },
+   "Unknown scenario": {
+    "scenario": "Z"
+   }
+  },
+  "responses": {
+   "200": {
+    "body": {
+     "error": null,
+     "key": "D",
+     "name": "Second-leg rejection",
+     "passed": true,
+     "steps": [
+      {
+       "data": {},
+       "detail": "Hyperliquid will reject the first hedge order",
+       "label": "Arm the fault"
+      },
+      {
+       "data": {
+        "hedge_quantity": "-5.00000",
+        "hedge_ratio": "0.9998500000",
+        "messages": [
+         "venue error: PAPER_HYPERLIQUID rejected order: injected rejection: scenario D: Hyperliquid rejects the hedge order",
+         "recovery succeeded: hedge restored, residual 1.50 bps"
+        ],
+        "path": "VALIDATED -> AWAITING_MARKET_DATA -> CALCULATED -> RISK_APPROVED -> LEG_1_SUBMITTED -> LEG_1_FILLED -> LEG_2_SUBMITTED -> RECOVERY_REQUIRED -> REBALANCING -> COMPLETED",
+        "residual": "0.0007500000000",
+        "state": "COMPLETED"
+       },
+       "detail": "final state COMPLETED",
+       "label": "Execute hedge cycle"
+      },
+      "... 1 more"
+     ],
+     "summary": "Leg 2 was rejected with leg 1 already on the book. The cycle routed to RECOVERY_REQUIRED, rebalanced and completed with 1.50 bps residual."
+    },
+    "request": {
+     "body": {
+      "scenario": "D"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/scenarios/run"
+    },
+    "title": "Run scenario D: second-leg rejection"
+   },
+   "404": {
+    "body": {
+     "detail": "\"unknown scenario 'Z'; choose from A, B, C, D, E, F, G, H, I, J\""
+    },
+    "request": {
+     "body": {
+      "scenario": "Z"
+     },
+     "headers": null,
+     "params": null,
+     "path": "/api/scenarios/run"
+    },
+    "title": "Unknown scenario"
+   }
+  }
+ },
+ "POST /api/scenarios/run-all": {
+  "error_requests": [],
+  "requests": {},
+  "responses": {
+   "200": {
+    "body": {
+     "passed": 8,
+     "results": [
+      {
+       "error": null,
+       "key": "A",
+       "name": "Normal BTC hedge",
+       "passed": true,
+       "steps": [
+        {
+         "data": {
+          "fees": "204.17750000",
+          "filled": "5000",
+          "price": "81671.0"
+         },
+         "detail": "bought 5000 contracts (= 5 BTC) at 81671.0",
+         "label": "Open a perpetual position"
+        },
+        {
+         "data": {
+          "conversion": "0.001",
+          "cost": "198.55451735",
+          "margin": "10211.28057813",
+          "steps": [
+           {
+            "formula": "BTCUSD mid / BTC mid",
+            "label": "Market data",
+            "unit": "",
+            "value": "81670.75 USD / 81702.5 USDC"
+           },
+           {
+            "formula": "1 contract = 0.001 BTC  |  1 base_unit = 1 BTC",
+            "label": "Contract sizing",
+            "unit": "",
+            "value": "1 contract vs 1 base_unit"
+           },
+           "... 12 more"
+          ]
+         },
+         "detail": "-5.000 BTC required on Hyperliquid, rounded to -5",
+         "label": "Calculate the hedge"
+        },
+        "... 2 more"
+       ],
+       "summary": "Hedged 5 BTC of perpetual exposure with -5.00000 BTC on Hyperliquid; residual 1.50 bps."
+      },
+      {
+       "error": null,
+       "key": "B",
+       "name": "Different contract multipliers",
+       "passed": true,
+       "steps": [
+        {
+         "data": {
+          "base_units": "5.000",
+          "conversion_ratio": "0.001",
+          "hedge_quantity": "-5",
+          "hedge_sizing": "1 base_unit = 1 BTC",
+          "pair": "BTC Delta perp -> Hyperliquid perp",
+          "source_quantity": "5000",
+          "source_sizing": "1 contract = 0.001 BTC"
+         },
+         "detail": "5000 contracts (5.000 BTC) -> -5 base_units",
+         "label": "BTC Delta perp -> Hyperliquid perp"
+        },
+        {
+         "data": {
+          "base_units": "40.00",
+          "conversion_ratio": "0.01",
+          "hedge_quantity": "-40",
+          "hedge_sizing": "1 base_unit = 1 ETH",
+          "pair": "ETH Delta perp -> Hyperliquid perp",
+          "source_quantity": "4000",
+          "source_sizing": "1 contract = 0.01 ETH"
+         },
+         "detail": "4000 contracts (40.00 ETH) -> -40 base_units",
+         "label": "ETH Delta perp -> Hyperliquid perp"
+        },
+        "... 3 more"
+       ],
+       "summary": "4 pairs, 4 distinct sizing combinations and 3 distinct contract-to-coin ratios (0.001, 0.01, 1). Quantity matching would be wrong for every one."
+      },
+      "... 8 more"
+     ],
+     "total": 10
+    },
+    "request": {
+     "body": null,
+     "headers": null,
+     "params": null,
+     "path": "/api/scenarios/run-all"
+    },
+    "title": "Run all ten scenarios"
+   }
+  }
+ }
+}

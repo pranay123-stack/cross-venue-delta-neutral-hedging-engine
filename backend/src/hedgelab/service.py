@@ -19,6 +19,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
+from .backtest.engine import BacktestConfig, Backtester, BacktestReport
 from .config import Settings, get_settings
 from .costs.funding import FundingProjection, project_funding
 from .costs.pnl import LegAccounting, PnLBreakdown, PnLCalculator
@@ -60,6 +61,7 @@ from .marketdata.feed import MarketFeed
 from .marketdata.frames import load_frames
 from .marketdata.fx import FxService
 from .marketdata.history import HistoryBundle, fetch_history
+from .marketdata.impact import measure_impact
 from .marketdata.stats import PairEstimate, RollingStats
 from .reconciliation.engine import ReconciliationEngine, ReconciliationReport, RecoveryPlan
 from .reconciliation.venue_records import (
@@ -123,6 +125,7 @@ class HedgeLabService:
             seed=self.settings.random_seed,
         )
         self._collector: LiveCollector | None = None
+        self._history_cache: dict[tuple[str, ...], HistoryBundle] = {}
         self.faults = FaultInjector(seed=self.settings.random_seed)
         #: Realised volatility and correlation, measured from the prices this
         #: process has actually seen.  Fed by ``advance_market``.
@@ -309,6 +312,52 @@ class HedgeLabService:
     def _sync_fx(self) -> None:
         for (base, quote), rate in self.market.fx_rates.items():
             self.fx.set_rate(base, quote, rate, source="kraken")
+
+    async def history_bundle(self, keys: list[str]) -> HistoryBundle:
+        """Real candle and funding history for ``keys``: the configured file,
+        the history shipped beside a replay recording, or -- live -- fetched
+        from the venues (30 days of hourly closes and settled funding)."""
+        path = self.settings.market_history_path
+        replay = self.settings.market_replay_path
+        if path is None and replay is not None and (replay.parent / "history.json.gz").exists():
+            path = replay.parent / "history.json.gz"
+        if path is not None:
+            bundle = HistoryBundle.load(path)
+            if all(k in bundle.instruments for k in keys):
+                return bundle
+        cached = self._history_cache.get(tuple(sorted(keys)))
+        if cached is not None:
+            return cached
+        bundle = await fetch_history([self.registry.get(k) for k in keys],
+                                     hourly_days=30, five_minute_days=0)
+        self._history_cache[tuple(sorted(keys))] = bundle
+        return bundle
+
+    async def run_backtest(
+        self,
+        mapping_name: str,
+        *,
+        source_quantity: Decimal,
+        target_ratio: Decimal = Decimal(1),
+        objective: HedgeObjective | None = None,
+        steps: int = 0,
+        tolerance_bps: Decimal = Decimal(25),
+        book_impact: bool = True,
+    ) -> BacktestReport:
+        """Replay real hourly history of a pair through the hedge maths."""
+        mapping = self.registry.mapping_by_name(mapping_name)
+        bundle = await self.history_bundle([mapping.source_key, mapping.hedge_key])
+        impact = None
+        if book_impact and self.market.is_replay:
+            recorded = self.market.recorded_frames
+            impact = {key: measure_impact(self.registry.get(key), recorded)
+                      for key in (mapping.source_key, mapping.hedge_key)}
+        return Backtester(self.registry.all(), bundle, self.fx, impact).run(BacktestConfig(
+            source_key=mapping.source_key, hedge_key=mapping.hedge_key,
+            source_quantity=source_quantity, objective=objective or mapping.objective,
+            target_ratio=target_ratio, steps=steps, tolerance_bps=tolerance_bps,
+            account_currency=self.settings.account_currency,
+        ))
 
     async def seed_statistics(self, bundle: HistoryBundle | None = None) -> int:
         """Prime the estimator with real 5-minute candles, so volatility and

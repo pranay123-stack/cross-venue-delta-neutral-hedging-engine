@@ -22,7 +22,17 @@ from ..logging_setup import configure_logging, correlation_scope, get_logger, ne
 from ..marketdata.feed import NoMarketData
 from ..service import HedgeLabService
 from ..venues.base import LiveTradingDisabledError, VenueError
-from .routers import hedging, operations, reference, risk_routes, scenario_routes, trading
+from .openapi import build_openapi
+from .responses import PlainDecimalJSONResponse
+from .routers import (
+    backtest_routes,
+    hedging,
+    operations,
+    reference,
+    risk_routes,
+    scenario_routes,
+    trading,
+)
 from .ws import TOPICS, HubPublisher, WebSocketHub
 
 log = get_logger(__name__)
@@ -131,6 +141,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         description=DESCRIPTION,
         version=settings.version,
         lifespan=build_lifespan(settings),
+        # Swagger UI at /docs is the one API explorer: it shows the same
+        # schemas as ReDoc and also lets a reader try every call.
+        redoc_url=None,
+        default_response_class=PlainDecimalJSONResponse,
         openapi_tags=[
             {"name": "hedging", "description": "Calculate, optimise and execute hedges."},
             {"name": "trading", "description": "Orders, fills, positions and accounts."},
@@ -138,6 +152,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             {"name": "reference data", "description": "Instruments, hedge pairs and configuration."},
             {"name": "operations", "description": "Market feed, stress overlays, faults and audit."},
             {"name": "scenarios", "description": "Predefined end-to-end demonstrations."},
+            {"name": "analytics", "description": "Backtests on real venue history."},
         ],
     )
     app.add_middleware(
@@ -185,9 +200,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def permission_handler(request: Request, exc: PermissionError) -> JSONResponse:
         return JSONResponse(status_code=409, content={"detail": str(exc)})
 
+    app.openapi = lambda: build_openapi(app)  # type: ignore[method-assign]
+
     for router in (
         reference.router, hedging.router, trading.router,
         risk_routes.router, operations.router, scenario_routes.router,
+        backtest_routes.router,
     ):
         app.include_router(router, prefix="/api")
 

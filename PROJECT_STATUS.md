@@ -5,7 +5,7 @@ Delta Exchange (India) and Hyperliquid, and everything below was produced by
 running the system rather than asserted.
 
 ```
- 501 tests passing in ~135s           (unit, property, integration; SQLite, offline)
+ 598 tests passing in ~145s           (unit, property, integration, API contract; SQLite, offline)
   10 browser tests passing            Playwright on Chrome, real API + dashboard, replay data
    0 errors under load                219 req/s at 50 clients, 154 at 200 (one process, laptop in powersave)
   25/25 acceptance steps passing      hedgelab demo — on replay and on live data in Docker
@@ -165,7 +165,7 @@ Fourteen faults, armed with scope and count for reproducibility, seeded by
 that drive the real engine.
 
 ### Infrastructure
-FastAPI with 59 paths (67 operations) and OpenAPI; WebSocket with twelve topics
+FastAPI with 60 paths (68 operations) and OpenAPI with a recorded real example per operation; WebSocket with twelve topics
 and bounded per-client queues; PostgreSQL with 22 tables and four Alembic migrations; React
 + TypeScript dashboard with eight pages; Docker Compose with four
 healthchecked services and the recordings bundled in the image for offline
@@ -190,12 +190,13 @@ tests/unit/test_real_market_data.py         38 passed
 tests/unit/test_inverse_real_data.py         5 passed
 tests/unit/test_properties.py                9 passed
 tests/unit/test_live_readiness.py           37 passed
+tests/integration/test_api_contract.py      97 passed
 tests/integration/test_api.py               46 passed
 tests/integration/test_workflow.py          25 passed
 tests/integration/test_websocket_and_scenarios.py  24 passed
 tests/integration/test_acceptance.py         3 passed
                                            ---
-                                           501 passed in ~135s
+                                           598 passed in ~145s
 ```
 
 All offline: the inputs are committed real data —

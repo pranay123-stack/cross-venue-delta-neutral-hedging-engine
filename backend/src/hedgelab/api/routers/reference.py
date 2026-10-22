@@ -208,6 +208,12 @@ async def hedge_configs(service: Service) -> dict[str, Any]:
             "max_daily_loss": str(service.risk_engine.thresholds.max_daily_loss),
             "max_spread_bps": str(service.risk_engine.thresholds.max_spread_bps),
         },
+        "hard_limits": {
+            "max_order_notional": str(service.settings.hard_max_order_notional),
+            "max_position_notional": str(service.settings.hard_max_position_notional),
+            "max_daily_loss_per_venue": str(service.settings.hard_max_daily_loss_per_venue),
+            "max_orders_per_minute": service.settings.hard_max_orders_per_minute,
+        },
         "portfolio_limits": {
             "max_total_notional": str(service.portfolio_engine.limits.max_total_notional),
             "max_aggregate_margin_utilization":

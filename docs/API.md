@@ -1,6 +1,25 @@
 # API
 
-FastAPI, 59 paths (67 operations), OpenAPI at `/docs`. Everything under `/api`.
+FastAPI, 60 paths (68 operations). Everything under `/api`.
+
+**Explore it in Swagger UI at <http://localhost:8001/docs>.** Every operation
+there shows a **real** example request and the **real** responses it returns —
+success *and* errors — recorded from the running application on the committed
+Delta + Hyperliquid recording, and each error status is explained. Swagger is
+the one explorer (ReDoc is turned off: it shows the same schemas without the
+"Try it out" button). The raw document is at `/openapi.json`.
+
+The examples come from one ordered walk through the API
+([`example_calls.py`](../backend/src/hedgelab/api/example_calls.py)) — read
+the market, size a hedge, open and hedge a position, stress the market, inject
+faults, reconcile, engage the kill switch — so they show real state, not
+placeholders. `tests/integration/test_api_contract.py` replays that walk on
+every test run and fails if any response's status or shape no longer matches
+the documentation. After changing an endpoint, re-record:
+
+```bash
+cd backend && .venv/bin/python scripts/capture_api_examples.py
+```
 
 **Decimals are strings.** A quantity that round-trips through a JSON float can
 come back off the venue's lattice, and the client would then display a number
@@ -167,6 +186,12 @@ is logged; it never applies backpressure to the trading engine.
 
 `LiveTradingDisabledError` maps to **403** — the platform will tell you clearly
 that it has no live path rather than failing obscurely.
+
+## Analytics
+
+| Endpoint | Notes |
+|---|---|
+| `POST /api/backtest/run` | TRADER. Replays real hourly closes and settled funding of a pair through the hedge maths. Body: `mapping_name`, `source_quantity`, `target_ratio`, optional `objective`, `steps`, `tolerance_bps`, `book_impact` (impact measured on recorded books when a recording is loaded), `include_points`. History comes from the configured file, the recording's bundled history, or — on live data — 30 days fetched from the venues. Exit costs are not charged; results describe the past window only |
 
 ## Live-readiness endpoints
 

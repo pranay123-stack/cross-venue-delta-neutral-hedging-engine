@@ -231,12 +231,12 @@ make check       # lint, strict types, tests, frontend build, browser tests
 
 | Check | Result | How it is measured |
 |---|---|---|
-| Backend tests | **501 passed**, offline | `make test` — unit, Hypothesis property tests, integration, API, WebSocket. A fixture fails any test that touches the network; inputs are committed recordings of the real venues |
+| Backend tests | **598 passed**, offline | `make test` — unit, Hypothesis property tests, integration, API contract, WebSocket. A fixture fails any test that touches the network; inputs are committed recordings of the real venues |
 | Browser tests | **10 passed** | `make e2e` — Playwright on Chrome against the real API and dashboard on replay data |
 | Coverage | **88 %** overall, 93–100 % on the calculation core | `pytest --cov` |
 | Lint / types | ruff clean · mypy strict clean (86 files) · tsc clean | `make lint typecheck` |
 | Acceptance / scenarios | 25/25 · 10/10, on replay and live in Docker | `hedgelab demo`, `scenario run-all` |
-| Clean install | pinned install from scratch passes lint, types and all 501 tests | `pip install -c backend/requirements-lock.txt -e ".[dev]"` |
+| Clean install | pinned install from scratch (as CI does) passes lint, types and the full suite | `pip install -c backend/requirements-lock.txt -e ".[dev]"` |
 | HTTP throughput | 219 req/s at 50 clients, 154 req/s at 200 — **0 errors** at both | `backend/scripts/load_test.py` against one replay-mode process on SQLite, on a laptop CPU in `powersave` (~1 GHz); absolute rates are machine-specific |
 
 **What the throughput figure is — and is not.** It measures how many dashboard
@@ -310,10 +310,12 @@ Reproduce: `make backtest`, or
 
 ## API and CLI
 
-* **REST + WebSocket API** — 59 paths, OpenAPI at `/docs`: hedge calculation,
+* **REST + WebSocket API** — 60 paths, explored in **Swagger UI at `/docs`**,
+  where every operation shows a real recorded request and its real success and
+  error responses (kept true by a contract test): hedge calculation,
   optimisation and execution, risk and portfolio, P&L and funding, market feed
   and stress overlays, fault injection, reconciliation, dry-run orders,
-  scenarios, system status. Reference: [API.md](docs/API.md).
+  scenarios, backtests, system status. Reference: [API.md](docs/API.md).
 * **CLI** — `hedgelab demo | scenario | calculate | optimize | backtest |
   instruments sync | market record | market history | watchdog | serve`.
   Run `hedgelab --help`; every `make` target is listed by `make help`.

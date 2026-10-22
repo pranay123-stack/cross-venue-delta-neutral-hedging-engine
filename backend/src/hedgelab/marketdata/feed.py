@@ -115,6 +115,11 @@ class MarketFeed:
         return bool(self._frames)
 
     @property
+    def recorded_frames(self) -> list[MarketFrame]:
+        """The recording being replayed (empty when live)."""
+        return list(self._frames)
+
+    @property
     def replay_position(self) -> tuple[int, int]:
         return self._index + 1, len(self._frames)
 

@@ -2,7 +2,7 @@
 
 ```bash
 cd backend
-.venv/bin/python -m pytest tests/ -q          # 501 tests, ~135s, offline
+.venv/bin/python -m pytest tests/ -q          # 598 tests, ~145s, offline
 .venv/bin/python -m pytest --cov=src/hedgelab --cov-report=term-missing
 .venv/bin/hedgelab demo                       # the 25-step acceptance run
 .venv/bin/hedgelab scenario run-all           # the ten demo scenarios
@@ -407,6 +407,17 @@ heartbeat has ever been written" as dead, and flattened positions while the
 freshly rebuilt backend was still starting. Never-seen-alive is now
 `NOT_STARTED`; only a heartbeat that *stopped* triggers, and the API beats
 before its first poll. A regression test pins it.
+
+## The API contract (`tests/integration/test_api_contract.py`)
+
+Every one of the 68 operations in the OpenAPI document carries a real example
+request and its real success and error responses, recorded from the running
+app on the committed recording (`make api-examples`). 97 tests keep that true:
+every operation must be documented; one ordered walk through the API (82 calls,
+including 404, 409, 422, 428 and 503 cases) is replayed against a fresh app and
+each response must return its documented status and shape; every error must
+explain itself in `detail`; and no response may render a decimal in scientific
+notation. Renaming one response field fails the suite (mutation-checked).
 
 ## The acceptance run
 

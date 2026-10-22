@@ -145,7 +145,7 @@ async def update_limits(
 # ======================================================================
 # funding and P&L
 # ======================================================================
-@router.get("/funding", summary="Funding and swap projection per pair")
+@router.get("/funding", summary="Funding projection per pair, at current real rates")
 async def funding(service: Service, horizon_days: Decimal = Decimal(1)) -> dict[str, Any]:
     projections = []
     for mapping in service.registry.mappings(enabled_only=True):
@@ -157,7 +157,7 @@ async def funding(service: Service, horizon_days: Decimal = Decimal(1)) -> dict[
     return {"horizon_days": str(horizon_days), "pairs": projections}
 
 
-@router.get("/funding/history", summary="Applied funding and swap charges")
+@router.get("/funding/history", summary="Funding charges applied to the paper positions")
 async def funding_history(service: Service, limit: int = 100) -> dict[str, Any]:
     from ...db.repositories import ObservabilityRepository
 

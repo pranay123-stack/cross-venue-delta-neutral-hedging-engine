@@ -124,7 +124,7 @@ class PortfolioLimitUpdate(ApiModel):
 
 
 # ======================================================================
-# simulation and faults
+# market stress overlays and faults
 # ======================================================================
 class ScenarioRequest(ApiModel):
     scenario: MarketScenario
@@ -165,6 +165,27 @@ class FaultRequest(ApiModel):
     magnitude: Decimal = Decimal("0.5")
     probability: Decimal = Decimal(1)
     reason: str = "operator-injected fault"
+
+
+class BacktestRequest(ApiModel):
+    mapping_name: str = Field(description="Hedge pair to backtest, as listed by /instrument-mappings")
+    source_quantity: Decimal = Field(
+        default=Decimal(1000), description="Signed source position held throughout, in source units"
+    )
+    target_ratio: Decimal = Field(default=Decimal(1), ge=0, le=2,
+                                  description="Fraction of the exposure to hedge")
+    objective: HedgeObjective | None = Field(
+        default=None, description="Hedge objective; the pair's own when omitted")
+    steps: int = Field(default=0, ge=0, le=10_000,
+                       description="Most recent hours to replay; 0 replays all available history")
+    tolerance_bps: Decimal = Field(default=Decimal(25), ge=0,
+                                   description="Rebalance when residual exceeds this")
+    book_impact: bool = Field(
+        default=True,
+        description="Charge price impact measured on recorded order books when a recording "
+                    "is loaded; otherwise half the spread measured at sync time")
+    include_points: bool = Field(default=False,
+                                 description="Return the hour-by-hour path as well as the summary")
 
 
 class KillSwitchRequest(ApiModel):
