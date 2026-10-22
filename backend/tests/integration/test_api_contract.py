@@ -109,10 +109,10 @@ async def test_errors_explain_themselves(exchanges: list[Exchange]) -> None:
             assert isinstance(ex.response, dict) and ex.response.get("detail"), ex.call.title
 
 
-def test_swagger_is_the_one_explorer() -> None:
+def test_redoc_is_the_one_reference() -> None:
     app = create_app()
-    assert app.docs_url == "/docs"
-    assert app.redoc_url is None
+    assert app.redoc_url == "/redoc"
+    assert app.docs_url is None
 
 
 @pytest.mark.parametrize("raw,shown", [

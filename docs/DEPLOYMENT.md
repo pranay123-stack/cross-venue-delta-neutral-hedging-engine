@@ -10,7 +10,7 @@ docker compose up --build
 | Service | Host port | URL |
 |---|---|---|
 | Dashboard (nginx) | 5174 | <http://localhost:5174> |
-| Backend API | 8001 | <http://localhost:8001/docs> |
+| Backend API | 8001 | <http://localhost:8001/redoc> |
 | PostgreSQL | 5468 | |
 | Redis | 6479 | |
 

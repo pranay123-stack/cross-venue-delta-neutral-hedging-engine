@@ -2,7 +2,7 @@
 #
 #   docker compose up --build
 #   dashboard  http://localhost:5174
-#   API docs   http://localhost:8001/docs
+#   API docs   http://localhost:8001/redoc
 #
 # Host ports are deliberately non-default (5174/8001/5468/6479) so this stack
 # can run alongside other projects. If one is already taken, override it in

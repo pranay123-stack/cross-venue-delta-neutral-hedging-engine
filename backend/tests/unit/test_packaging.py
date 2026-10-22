@@ -2,7 +2,7 @@
 
 Regression: ``openapi_examples.json`` was missing from ``package-data``. An
 editable install (development, tests) found it on disk, so everything passed;
-the Docker image installs the package normally and served Swagger without a
+the Docker image installs the package normally and served ReDoc without a
 single example.
 """
 

@@ -396,7 +396,7 @@ docker compose up --build                                    # live data
 HEDGELAB_MARKET_DATA_SOURCE=replay docker compose up --build # offline, bundled recording
 ```
 
-Dashboard <http://localhost:5174> · API docs <http://localhost:8001/docs>
+Dashboard <http://localhost:5174> · API docs <http://localhost:8001/redoc>
 
 ```bash
 docker compose exec backend hedgelab demo             # 25 steps, a few seconds

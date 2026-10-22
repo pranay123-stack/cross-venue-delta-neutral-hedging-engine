@@ -2,12 +2,13 @@
 
 FastAPI, 60 paths (68 operations). Everything under `/api`.
 
-**Explore it in Swagger UI at <http://localhost:8001/docs>.** Every operation
+**Read it in ReDoc at <http://localhost:8001/redoc>.** Every operation
 there shows a **real** example request and the **real** responses it returns —
 success *and* errors — recorded from the running application on the committed
-Delta + Hyperliquid recording, and each error status is explained. Swagger is
-the one explorer (ReDoc is turned off: it shows the same schemas without the
-"Try it out" button). The raw document is at `/openapi.json`.
+Delta + Hyperliquid recording, and each error status is explained. ReDoc is
+the one reference (Swagger UI is turned off); it is read-only, so to send a
+request copy an example into `curl` or any HTTP client. The raw document is at
+`/openapi.json`.
 
 The examples come from one ordered walk through the API
 ([`example_calls.py`](../backend/src/hedgelab/api/example_calls.py)) — read

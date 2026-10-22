@@ -141,9 +141,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         description=DESCRIPTION,
         version=settings.version,
         lifespan=build_lifespan(settings),
-        # Swagger UI at /docs is the one API explorer: it shows the same
-        # schemas as ReDoc and also lets a reader try every call.
-        redoc_url=None,
+        # ReDoc at /redoc is the one API reference: a read-only layout of the
+        # same schemas and recorded examples. Swagger UI is turned off.
+        docs_url=None,
+        redoc_url="/redoc",
         default_response_class=PlainDecimalJSONResponse,
         openapi_tags=[
             {"name": "hedging", "description": "Calculate, optimise and execute hedges."},
@@ -216,7 +217,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "version": settings.version,
             "trading_mode": settings.trading_mode.value,
             "paper_only": True,
-            "docs": "/docs",
+            "docs": "/redoc",
             "openapi": "/openapi.json",
             "websocket": "/ws",
         }

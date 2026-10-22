@@ -3,7 +3,7 @@
 Runs :data:`hedgelab.api.example_calls.CALLS` against the real application on
 the committed recording of a live Delta Exchange + Hyperliquid session and
 writes ``src/hedgelab/api/openapi_examples.json``, which the app injects into
-its OpenAPI document (Swagger UI at ``/docs``).
+its OpenAPI document (ReDoc at ``/redoc``).
 
     python scripts/capture_api_examples.py
 

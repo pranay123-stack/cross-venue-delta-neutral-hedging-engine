@@ -3,7 +3,7 @@
 * ``scripts/capture_api_examples.py`` runs it against the real app on the
   recorded Delta/Hyperliquid session and stores every request and response in
   ``openapi_examples.json``; :mod:`.openapi` injects them into the OpenAPI
-  document, so Swagger UI shows a real example request, a real success response
+  document, so ReDoc shows a real example request, a real success response
   and real error responses for every operation.
 * ``tests/integration/test_api_contract.py`` runs it again and fails if any
   response's status or shape no longer matches what the documentation shows.
@@ -27,7 +27,7 @@ CONFIRM = {"X-Confirm-Action": "CONFIRM"}
 
 @dataclass(frozen=True)
 class Call:
-    #: Short label shown as the example's title in Swagger UI.
+    #: Short label shown as the example's title in ReDoc.
     title: str
     method: str
     #: The route template, as it appears in the OpenAPI document.

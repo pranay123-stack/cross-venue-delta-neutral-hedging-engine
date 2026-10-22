@@ -205,7 +205,7 @@ cp .env.example .env
 docker compose up --build
 ```
 
-Dashboard <http://localhost:5174> · API docs <http://localhost:8001/docs>. The
+Dashboard <http://localhost:5174> · API docs <http://localhost:8001/redoc>. The
 backend polls both exchanges every 3 seconds (no API keys — the data is public)
 and a separate **watchdog** container guards the book. Offline, or if a venue is
 unreachable: `HEDGELAB_MARKET_DATA_SOURCE=replay docker compose up --build`.
@@ -310,7 +310,7 @@ Reproduce: `make backtest`, or
 
 ## API and CLI
 
-* **REST + WebSocket API** — 60 paths, explored in **Swagger UI at `/docs`**,
+* **REST + WebSocket API** — 60 paths, read in **ReDoc at `/redoc`**,
   where every operation shows a real recorded request and its real success and
   error responses (kept true by a contract test): hedge calculation,
   optimisation and execution, risk and portfolio, P&L and funding, market feed

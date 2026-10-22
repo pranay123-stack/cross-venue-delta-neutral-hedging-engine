@@ -58,5 +58,5 @@ down:
 screenshots:  ## re-capture README screenshots from the running app
 	cd frontend && npx playwright test -c playwright.screenshots.config.ts
 
-api-examples:  ## re-record the real request/response examples shown in Swagger UI
+api-examples:  ## re-record the real request/response examples shown in ReDoc
 	cd backend && .venv/bin/python scripts/capture_api_examples.py
