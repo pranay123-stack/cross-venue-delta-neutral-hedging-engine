@@ -11,6 +11,7 @@ execution against real order books, risk controls and recovery testing.**
 > **real** — Delta Exchange (India) and Hyperliquid public APIs, live or
 > replayed from a recording.
 
+[![CI](https://github.com/pranay123-stack/cross-venue-delta-neutral-hedging-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/pranay123-stack/cross-venue-delta-neutral-hedging-engine/actions/workflows/ci.yml)
 ![Python 3.12](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
 ![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)

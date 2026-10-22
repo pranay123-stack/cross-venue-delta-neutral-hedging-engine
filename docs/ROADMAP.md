@@ -14,7 +14,7 @@ Status key: ✅ done · 🔜 next · ⏳ later
 | Documentation consistency | Every figure in README and docs re-measured | No doc quotes a number the code no longer produces | ✅ |
 | One-command setup | `docker compose up --build`; `make install` / `make check` | A fresh clone runs both without manual steps | ✅ |
 | Reproducible demo | `make demo` on the recorded session | Same 25/25 result offline, every run | ✅ |
-| CI | `.github/workflows/ci.yml`: ruff, mypy, pytest, tsc, build, Playwright, audit | A green run on `main` | 🔜 verify on first push |
+| CI | `.github/workflows/ci.yml`: ruff, mypy, pytest, tsc, build, Playwright, audit | A green run on `main` | ✅ |
 | Verified screenshots | `make screenshots` from the running app | Images in `docs/images/` come from the real dashboard | ✅ |
 | Licensing and security policy | MIT `LICENSE`, `SECURITY.md` | Both present and linked from the README | ✅ |
 | Owner-side GitHub settings | See below | All applied | 🔜 owner action |
