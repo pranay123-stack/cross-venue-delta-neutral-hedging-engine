@@ -131,22 +131,39 @@ through public read-only endpoints. Module-by-module rationale is in
 
 ## A hedge, calculated step by step
 
-You hold **5000 BTCUSD contracts long on Delta Exchange**; BTC is about $81,700.
+One real hedge, every number produced by the engine on the recorded Delta +
+Hyperliquid session (22 Oct 2026, 12:35 UTC). **The full walkthrough —
+objectives, venue payloads, a −10 % crash and funding — is in
+[How the hedging engine works](docs/HOW_A_HEDGE_WORKS.md).**
 
-| Step | Calculation | Result |
-|---|---|---|
-| Position in coins | 5000 contracts × 0.001 BTC | **5 BTC** long |
-| Notional | 5 BTC × $81,700 | ≈ $408,500 |
-| Hedge (price-sensitivity neutral) | −5 BTC ÷ 1 BTC per Hyperliquid unit | **−5.00000 BTC** |
-| Venue rounding | Hyperliquid step 0.00001 BTC | −5.00000 (no rounding error) |
-| Order value check | 5 × $81,700 ≫ $10 minimum | accepted |
-| Margin | Delta 0.5 % on $408k is above the $100k tier, so 0.5 % + 0.0000025 % × 308,500 ≈ 1.27 % · Hyperliquid 2.5 % | ≈ $5.2k + $10.2k |
-| Residual after execution | 5 BTC × (1 − 0.99985 USDC/USD) | 0.00075 BTC = **1.50 bps** |
+**The position:** 5,000 BTCUSD contracts long on Delta Exchange. **The goal:**
+the exactly offsetting position on Hyperliquid.
 
-The last line is the reason FX normalisation matters: the two legs settle in
-different dollars, and the measured USDC/USD rate leaves a small, explained
-residual well inside the pair's 25 bps tolerance. The dashboard's Hedge
-Calculator shows the same derivation for any pair and objective.
+| # | Step | What the engine does | Result |
+|---|---|---|---|
+| 1 | **Read the market** | Delta mid 81,653.25 USD · Hyperliquid mid 81,685.5 USDC · USDC/USD 0.99985 | one normalised snapshot |
+| 2 | **Translate units** | 5,000 contracts × 0.001 BTC | **5 BTC** — not "5,000" (a 1,000× error) |
+| 3 | **Measure exposure** | 5 BTC × 81,653.25 | **$408,266** notional, delta 5 |
+| 4 | **Choose "neutral"** | quote-P&L neutral (8 other objectives give −4.88 to −5.00075 BTC) | **−5 BTC** |
+| 5 | **Fit venue rules** | 0.00001 BTC step, round toward zero, $10 minimum | −5.00000, no rounding error |
+| 6 | **Price it first** | 4.5 bps taker fee + half spread · margin at 40× · funding at current rates | cost **$186**, margin **$10.2k**, carry **+$166/day** |
+| 7 | **Check safety** | risk gate · hard limits · exact exchange orders built and validated | both orders sendable |
+| 8 | **Execute two legs** | Delta BUY 5,000 @ 81,653.5 → Hyperliquid SELL 5 BTC @ 81,685, leg 2 sized from leg 1's fill | `… → BOTH_FILLED → COMPLETED` |
+| 9 | **Result** | hedge ratio 0.99985 | residual **1.50 bps** = 5 BTC × (1 − 0.99985) |
+
+**Then BTC falls 10 %** (81,669 → 73,503):
+
+```
+Delta leg            −$40,827.50
+Hyperliquid leg      +$40,840.00
+fees, spread, FX      −$405.27   (unchanged by the move, apart from $10 of FX and spread)
+─────────────────────────────────
+the book moved by     +$6.38      on a $40,800 swing per leg
+```
+
+The two legs live on different exchanges, so the engine also watches each
+venue's margin on its own: after the drop Delta's equity is down $40.8k while
+Hyperliquid's is up — the book is flat, but each account must stay solvent.
 
 ## Risk controls and failure recovery
 
@@ -353,7 +370,8 @@ To discuss it, open an issue or reach out through
 
 ---
 
-**Documentation:** [Case study](docs/ENGINEERING_CASE_STUDY.md) ·
+**Documentation:** [How a hedge works](docs/HOW_A_HEDGE_WORKS.md) ·
+[Case study](docs/ENGINEERING_CASE_STUDY.md) ·
 [Architecture](docs/ARCHITECTURE.md) · [Hedge engine](docs/HEDGE_ENGINE.md) ·
 [Execution](docs/EXECUTION_ENGINE.md) · [Risk](docs/RISK_ENGINE.md) ·
 [Failure recovery](docs/FAILURE_RECOVERY.md) · [Paper trading](docs/PAPER_TRADING.md) ·
