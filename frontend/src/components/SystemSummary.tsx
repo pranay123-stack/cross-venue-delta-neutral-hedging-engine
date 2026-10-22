@@ -114,10 +114,11 @@ export function SystemSummary({
           </div>
           <div className="sub">
             {status.venues.map((venue) => (
-              <span key={venue.venue} style={{ marginRight: 12 }}>
+              <div key={venue.venue}>
                 <ConnectionDot connected={venue.connected} />
                 {venue.venue} · {venue.open_positions} open
-              </span>
+                {!venue.connected && " · DISCONNECTED"}
+              </div>
             ))}
           </div>
         </div>
@@ -137,7 +138,11 @@ export function SystemSummary({
             Watchdog:{" "}
             {watchdog?.running
               ? `running, last check ${watchdog.last_check_age_s?.toFixed(0)}s ago`
-              : "not running (it is a separate process: `hedgelab watchdog`)"}
+              : (
+                <>
+                  not running — it is a separate process: <code>hedgelab watchdog</code>
+                </>
+              )}
             {" · "}
             hard-limit refusals: {breaches}
           </div>

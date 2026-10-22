@@ -1,0 +1,26 @@
+name: Feature or venue request
+description: A new capability, venue, or analysis.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would it solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed approach
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: How would we know it works?
+      description: The test or measurement that would prove it.
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: This does not require committing exchange credentials or enabling live trading by default
+          required: true

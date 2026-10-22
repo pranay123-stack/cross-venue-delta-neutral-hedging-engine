@@ -39,7 +39,7 @@ domain/        InstrumentSpec, QuantityConverter, Exposure, Position, Order.
 `hedge/`, `risk/` and `costs/` never fetch anything — market data and account
 state arrive as arguments. Only `marketdata/sources.py` talks to the network,
 and it holds no credential and calls no endpoint that can trade. That is why
-the whole suite — 438 tests — runs offline on SQLite with no Docker: the
+the whole suite — 501 tests — runs offline on SQLite with no Docker: the
 calculation core has no I/O to mock, and the network edge is replaced by
 committed recordings of the real venues.
 

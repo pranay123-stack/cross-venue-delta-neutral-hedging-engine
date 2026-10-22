@@ -51,7 +51,7 @@ exactly what happened before the fixture existed (see finding 3 below).
 | Workflow & recovery | 25 | Full pipeline, every failure mode, restart reconstruction, estimated statistics |
 | Acceptance run | 3 | The 25-step demo, twice, and from a deliberately dirty state |
 
-Coverage is 87% overall; the calculation core is 94–100%.
+Coverage is 88% overall; the calculation core is 93–100%.
 
 ## Tests that assert something specific
 
@@ -293,30 +293,44 @@ where rounding does bite.
 dashboard, then drives Chrome through every page (no console errors, no failed
 requests), the calculator (5000 contracts → −5 BTC with its derivation), a hedge
 executed from the Hedge Pairs page and visible as a COMPLETED cycle, and a
-Hyperliquid outage injected and cleared from the Fault Injection page. 6 tests;
+Hyperliquid outage injected and cleared from the Fault Injection page; and the
+first screen: data source and execution mode stated, stress overlays labelled
+hypothetical, funding shown per interval and annualised, an unreachable API
+reported rather than left loading. 10 tests;
 24/24 over four repeats. One run out of nine early on logged a 404 that could
 not be reproduced; the page test now names the URL of any failed request.
 
 ### Load (`backend/scripts/load_test.py`)
-Against a single replay-mode process on SQLite:
+**What it measures:** how many dashboard and API *reads* one Python process
+serves — application HTTP throughput. Not market-data latency (the feed polls
+every 3 s) and not trade-execution latency (no real orders exist).
+
+Against a single replay-mode process on SQLite, on a laptop with the CPU
+governor in `powersave` (~1 GHz); a bare FastAPI hello-world on the same machine
+answers serially in 1.5 ms, so treat absolute rates as machine-specific:
 
 ```
- 50 HTTP clients + 20 WebSocket subscribers, 30s:  716 req/s, 0 errors
-     market-data / positions / mappings  p50 16 ms   p99 66–71 ms
-     hedge/calculate                     p50 20 ms   p99 79 ms
-     system/status, hedge/cycles         p50 ~95 ms  p99 ~380–410 ms
-     portfolio risk                      p50 174 ms  p99 473 ms
-     every subscriber received every price frame (30/30)
+ 50 HTTP clients + 20 WebSocket subscribers, 30s:  219 req/s, 0 errors
+     market-data / positions / mappings  p50 38–39 ms  p99 154–178 ms
+     hedge/calculate                     p50 47 ms     p99 385 ms
+     system/status, hedge/cycles         p50 321–363 ms p99 1.5–1.8 s
+     portfolio risk                      p50 519 ms    p99 1.7 s
+     price frames per subscriber: 18 in 30 s (one per second expected)
 
-200 HTTP clients + 100 WebSocket subscribers, 20s: 579 req/s, 0 errors
-     database-backed endpoints p99 ~3 s; price frames 18 per 20 s
+200 HTTP clients + 100 WebSocket subscribers, 20s: 154 req/s, 0 errors
 ```
 
-Nothing fails under 4× load, but one process saturates: database-backed
-endpoints slow by an order of magnitude, and the market loop shares the event
-loop, so prices refresh less often — under heavy dashboard load, data ages
-toward staleness. Splitting the market loop from the API is the fix if it
-matters.
+Serially (one request at a time) the same endpoints take 2–14 ms, so the
+latencies above are queueing in one saturated event loop. Nothing fails at 4×
+load, but the market loop shares that event loop, so under heavy dashboard load
+prices refresh less often and data ages toward staleness — the staleness gate
+then blocks execution, which is the safe direction. Splitting the market loop
+from the API, and caching the database-backed views, is the fix if it matters.
+An earlier run on the same laptop, under different power conditions and before
+the live-readiness layer was added, measured 716 req/s at 50 clients. That code
+no longer exists to re-run, so machine and code effects cannot be separated
+exactly; the 1.5 ms bare-FastAPI baseline indicates the machine accounts for
+much of the difference.
 
 ### Inverse contracts on a real inverse perpetual (`test_inverse_real_data.py`)
 Neither shipped venue lists one, so Bybit's BTCUSD (1 contract = 1 USD,

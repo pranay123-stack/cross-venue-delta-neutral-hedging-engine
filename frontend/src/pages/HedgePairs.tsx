@@ -162,7 +162,7 @@ export function HedgePairs() {
                 </dd>
                 <dt>Cross-venue basis</dt>
                 <dd>{pairRisk ? bps(pairRisk.basis_bps) : "—"}</dd>
-                <dt>Funding / swap per day</dt>
+                <dt>Net funding per day</dt>
                 <dd className={pairRisk ? signClass(pairRisk.funding_risk_per_day) : ""}>
                   {pairRisk ? money(pairRisk.funding_risk_per_day, currency) : "—"}
                 </dd>

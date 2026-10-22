@@ -101,7 +101,7 @@ alembic revision --autogenerate -m "description"
 The URL comes from application settings via `env.py`, never from `alembic.ini`,
 so no connection string or password is ever committed.
 
-Verified on PostgreSQL 16: 21 tables plus `alembic_version`, `audit_logs.before`
+Verified on PostgreSQL 16: 22 tables plus `alembic_version`, `audit_logs.before`
 is `jsonb`, `positions.quantity` is `numeric(38,18)`, and
 `downgrade base` → `upgrade head` round-trips cleanly.
 

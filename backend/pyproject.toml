@@ -1,7 +1,11 @@
 [project]
 name = "hedgelab"
 version = "1.0.0"
-description = "Cross-Platform Perpetual <-> MT5 Paper Hedging Platform"
+description = "Crypto cross-exchange delta-neutral hedging engine: Delta Exchange perpetuals hedged on Hyperliquid, on real market data, paper trading only"
+license = { text = "MIT" }
+authors = [{ name = "Pranay" }]
+keywords = ["crypto", "hedging", "delta-neutral", "perpetual-futures", "funding-rate",
+            "risk-management", "trading-infrastructure", "hyperliquid", "delta-exchange"]
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.115",
@@ -30,6 +34,10 @@ dev = [
     "types-PyYAML",
     "hypothesis>=6.100",
 ]
+
+[project.urls]
+Repository = "https://github.com/pranay123-stack/cross-venue-delta-neutral-hedging-engine"
+Documentation = "https://github.com/pranay123-stack/cross-venue-delta-neutral-hedging-engine/tree/main/docs"
 
 [project.scripts]
 hedgelab = "hedgelab.cli:app"

@@ -6,11 +6,11 @@ running the system rather than asserted.
 
 ```
  501 tests passing in ~135s           (unit, property, integration; SQLite, offline)
-   6 browser tests passing            Playwright on Chrome, real API + dashboard, replay data
-   0 errors under load                716 req/s at 50 clients; 579 req/s at 200, one process
+  10 browser tests passing            Playwright on Chrome, real API + dashboard, replay data
+   0 errors under load                219 req/s at 50 clients, 154 at 200 (one process, laptop in powersave)
   25/25 acceptance steps passing      hedgelab demo — on replay and on live data in Docker
   10/10 demo scenarios passing        hedgelab scenario run-all — on replay and live
-  87% line coverage overall           94–100% on the calculation core
+  88% line coverage overall           93–100% on the calculation core
  ruff: all checks passed
  mypy: strict, 86 source files, no issues
  tsc:  no issues; frontend builds
@@ -165,8 +165,8 @@ Fourteen faults, armed with scope and count for reproducibility, seeded by
 that drive the real engine.
 
 ### Infrastructure
-FastAPI with 57 routes and OpenAPI; WebSocket with twelve topics and bounded
-per-client queues; PostgreSQL with 21 tables and two Alembic migrations; React
+FastAPI with 59 paths (67 operations) and OpenAPI; WebSocket with twelve topics
+and bounded per-client queues; PostgreSQL with 22 tables and four Alembic migrations; React
 + TypeScript dashboard with eight pages; Docker Compose with four
 healthchecked services and the recordings bundled in the image for offline
 replay; structured JSON logging with correlation IDs; role-based access with
@@ -221,7 +221,7 @@ Coverage on the modules that matter:
 | `marketdata/feed.py` | 89% |
 | `instruments/sync.py` | 85% |
 | `marketdata/sources.py` | 83% |
-| **Overall** | **87%** |
+| **Overall** | **88%** |
 
 The lowest-covered modules are the network edge — `marketdata/collector.py`
 (70%) and `marketdata/history.py` (60%) — because the paths that only run

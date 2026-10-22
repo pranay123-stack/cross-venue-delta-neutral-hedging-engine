@@ -1,86 +1,184 @@
-# Cross-Venue Delta-Neutral Hedging Engine
+# Crypto Cross-Exchange Hedging Engine | Delta-Neutral Trading Infrastructure
 
-Holds a crypto perpetual position on **Delta Exchange** and the exactly
-offsetting position on **Hyperliquid**, so price moves cancel out — and handles
-everything that makes "exactly offsetting" hard when two venues measure,
-charge and settle positions differently.
+**An open-source crypto cross-exchange hedging engine that holds a perpetual
+futures position on Delta Exchange and the exactly offsetting position on
+Hyperliquid — with hedge-ratio calculation, funding-rate analytics, paper
+execution against real order books, risk controls and recovery testing.**
 
-It runs on **real market data** from both venues and trades **on paper only**.
+> **PAPER TRADING ONLY.** No real order can leave this software: the live
+> exchange adapters raise on every call, the venue factory builds only paper
+> venues, and no setting holds a credential. Market data, on the other hand, is
+> **real** — Delta Exchange (India) and Hyperliquid public APIs, live or
+> replayed from a recording.
 
-```
- long 5 BTC on Delta  (5000 contracts × 0.001 BTC)
-short 5 BTC on Hyperliquid  (5.00000 coins)
-──────────────────────────────────────────────
- BTC falls 8%:  Delta −$32,700   Hyperliquid +$32,700   →  book moves ~$36
-```
+![Python 3.12](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
+![React + TypeScript](https://img.shields.io/badge/React-TypeScript-3178C6?logo=typescript&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+![Trading: paper only](https://img.shields.io/badge/trading-paper%20only-orange)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-Python 3.12 · FastAPI · PostgreSQL · React + TypeScript · Docker.
-**501 backend tests** and **6 browser tests**, all offline against committed
-recordings of the real venues; every number in this README was produced by
-running the system.
+![The dashboard's first screen: paper execution, recorded replay data, no stress overlays, both venues connected, and a hedged BTC position](docs/images/overview.png)
 
 ---
 
 ## Contents
 
-1. [What it is, and why](#1-what-it-is-and-why)
-2. [Quick start](#2-quick-start)
-3. [How a hedge works](#3-how-a-hedge-works)
-4. [Why two venues are hard](#4-why-two-venues-are-hard)
-5. [System flow](#5-system-flow)
-6. [Architecture](#6-architecture)
-7. [Real market data](#7-real-market-data)
-8. [The hedge engine](#8-the-hedge-engine)
-9. [Execution and recovery](#9-execution-and-recovery)
-10. [Risk, margin and costs](#10-risk-margin-and-costs)
-11. [The live-readiness safety layer](#11-the-live-readiness-safety-layer)
-12. [Results on real data](#12-results-on-real-data)
-13. [Testing](#13-testing)
-14. [Reference: CLI, API, configuration](#14-reference-cli-api-configuration)
-15. [Limitations, and what is left before live](#15-limitations-and-what-is-left-before-live)
-16. [Documentation](#16-documentation)
+[The problem](#the-engineering-problem) ·
+[Features](#feature-highlights) ·
+[Architecture](#architecture) ·
+[A hedge, worked](#a-hedge-calculated-step-by-step) ·
+[Risk and recovery](#risk-controls-and-failure-recovery) ·
+[Screenshots](#screenshots) ·
+[Quick start](#quick-start) ·
+[Demo](#demo-commands-and-expected-results) ·
+[Testing](#testing-and-benchmark-methodology) ·
+[Backtest](#backtest-on-real-history) ·
+[Design decisions](#engineering-design-decisions) ·
+[API and CLI](#api-and-cli) ·
+[Roadmap](#roadmap-and-non-goals) ·
+[Contributing](#contributing) ·
+[Security](#security-and-responsible-use) ·
+[License](#license) ·
+[Collaboration](#collaboration)
 
 ---
 
-## 1. What it is, and why
+## The engineering problem
 
-A **cross-venue, delta-neutral hedging engine**: it keeps a position on one
-exchange and the equal-and-opposite position on another, so the combined book
-has (almost) no exposure to the price.
+A **delta-neutral crypto** position is long a coin on one exchange and short
+the same coin on another, so price moves cancel. People run it to protect a
+position that has to stay where it is, to earn the difference in **funding
+rates** between venues, or to hold **cross-exchange basis** exposure without
+outright price risk.
 
-Why hold the same coin long on one venue and short on another, instead of just
-closing the position?
+It sounds like "buy here, sell there". It is not, because the two exchanges
+describe the same economic position in incompatible ways:
 
-* **Protect a position that has to stay where it is** — a strategy, a client or
-  an inventory lives on Delta, and its price risk has to go away without
-  closing it.
-* **Earn the funding difference (carry).** Every perpetual charges *funding*
-  between longs and shorts, and each venue sets its own rate. Long where you
-  pay less, short where you are paid more, and you collect the difference with
-  the price risk cancelled. Over 30 real days that was **+$303 per BTC** — see
-  [Results](#12-results-on-real-data).
-* **Capture the basis** between venues: Delta's BTC sat ~$30 (≈3–4 bps) below
-  Hyperliquid's throughout the recording.
+| | Delta Exchange (India) | Hyperliquid |
+|---|---|---|
+| Quantity | contracts of 0.001 BTC | coins, step 0.00001 BTC |
+| Funding | **percent** per **8 h** (4 h for PAXG) | **fraction** per **hour** |
+| Settlement | USD | USDC |
+| Price tick | fixed 0.5 | five significant figures — changes with price |
+| Margin | 0.5 % to $100k, **rising with position size** | 1 / max leverage |
+| Minimum order | 1 contract | $10 |
+| Order types | `gtc`, `ioc` | `Alo`, `Ioc`, `Gtc`; no fill-or-kill on either |
 
-What it is **not**: not high-frequency arbitrage (it polls every 3 seconds and
-holds positions for hours to weeks), not a market maker (it does not quote),
-and not a signal generator (you choose what to hedge; it makes the hedge
-correct and safe).
+Get any of these wrong and the hedge is wrong: matching "5000" to "5000" is a
+1000× over-hedge; comparing raw funding fields misreads Hyperliquid by 100× in
+units and 8× in time; a flat 0.5 % margin makes an $8M position look like it
+needs $41k when it needs $1.69M. And two exchanges cannot be traded atomically —
+the first leg can fill while the second is rejected, times out, or the process
+dies in between.
 
-> **Paper trading only.** No live order path exists. The live adapters raise on
-> every method, the venue factory builds nothing but paper venues, and no
-> setting holds a credential. Every order is a paper fill against the venue's
-> *real* order book.
->
-> **Real market data only.** Prices, books, funding and contract specs come
-> from Delta Exchange (India) and Hyperliquid public APIs — polled live or
-> replayed from a recording of a live session. There is no price simulator and
-> no synthetic fallback: an instrument with no real quote is refused, not
-> priced.
+This repository is the infrastructure that makes such a hedge correct and safe.
+The full account is in the [engineering case study](docs/ENGINEERING_CASE_STUDY.md).
 
----
+## Feature highlights
 
-## 2. Quick start
+* **Real market data, live or replayed** — order books, mark prices and funding
+  from Delta Exchange and Hyperliquid; stablecoin FX from Kraken. A recorded
+  live session replays deterministically for tests and offline demos.
+* **Exchange specs generated from the venues' own metadata** — contract value,
+  tick, size decimals, fees, margin schedule, funding interval, venue ids.
+* **Hedge ratio calculation** under nine objectives (coin-, notional- and
+  P&L-neutral, funding- and cost-adjusted, β-weighted), each with a 14-step
+  derivation, plus a lattice-aware quantity optimiser.
+* **Paper execution** — a supervised two-leg cycle (sixteen persisted states)
+  filling against the real order books, with recovery from rejection, partial
+  fills, timeouts, disconnects and restarts.
+* **Crypto risk management** — per-pair and portfolio ladders, size-based
+  margin and liquidation, and a kill switch that verifies flat and survives a
+  restart.
+* **Live-readiness safety layer** — hard limits in front of every venue, rate
+  limiting with backoff, an order-independent fill ledger, venue-native dry-run
+  payloads, fill- and funding-level reconciliation, and an **independent
+  watchdog** process.
+* **Funding-rate analytics and backtesting** on 30 days of real hourly closes
+  and settled funding, with price impact measured on recorded books.
+* **A React dashboard**, a FastAPI service with OpenAPI, a CLI, Docker Compose.
+
+## Architecture
+
+```
+            Delta /v2 tickers + l2orderbook     Hyperliquid metaAndAssetCtxs + l2Book     Kraken USDC/USD
+                              └─────────────────────────┬──────────────────────────────────┘
+                                                        ▼
+                         collector ─▶ market frame (units normalised) ─▶ MarketFeed (+ labelled stress overlays)
+                                         │ record / replay                     │
+              ┌──────────────────────────┴───────────┬──────────────────────────┼──────────────────────┐
+              ▼                                      ▼                          ▼                      ▼
+     statistics (vol, ρ, β)        hedge engine: convert ─▶ objectives ─▶     paper venues        dashboard
+                                   optimiser ─▶ risk gate                     (real books)        (WebSocket)
+                                             │                                    ▲
+                                             ▼                                    │
+                     hard-limit guard + dry-run payload ─▶ 16-state two-leg coordinator ─▶ recovery
+                                                                   │ write-ahead
+                                                                   ▼
+                                   PostgreSQL ─▶ reconciliation (positions, fills, funding) ─▶ P&L attribution
+                                       ▲
+             watchdog (separate process): API heartbeat stops ─▶ flatten, verify flat, persist kill switch
+```
+
+The calculation core — `domain/`, `hedge/`, `risk/`, `costs/` — is pure Python
+with no network or database access, so identical code runs live, on a replay,
+in the backtest and in tests. Only `marketdata/sources.py` touches the network,
+through public read-only endpoints. Module-by-module rationale is in
+[ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## A hedge, calculated step by step
+
+You hold **5000 BTCUSD contracts long on Delta Exchange**; BTC is about $81,700.
+
+| Step | Calculation | Result |
+|---|---|---|
+| Position in coins | 5000 contracts × 0.001 BTC | **5 BTC** long |
+| Notional | 5 BTC × $81,700 | ≈ $408,500 |
+| Hedge (price-sensitivity neutral) | −5 BTC ÷ 1 BTC per Hyperliquid unit | **−5.00000 BTC** |
+| Venue rounding | Hyperliquid step 0.00001 BTC | −5.00000 (no rounding error) |
+| Order value check | 5 × $81,700 ≫ $10 minimum | accepted |
+| Margin | Delta 0.5 % on $408k is above the $100k tier, so 0.5 % + 0.0000025 % × 308,500 ≈ 1.27 % · Hyperliquid 2.5 % | ≈ $5.2k + $10.2k |
+| Residual after execution | 5 BTC × (1 − 0.99985 USDC/USD) | 0.00075 BTC = **1.50 bps** |
+
+The last line is the reason FX normalisation matters: the two legs settle in
+different dollars, and the measured USDC/USD rate leaves a small, explained
+residual well inside the pair's 25 bps tolerance. The dashboard's Hedge
+Calculator shows the same derivation for any pair and objective.
+
+## Risk controls and failure recovery
+
+| Failure | What the engine does | Verified by |
+|---|---|---|
+| Second leg rejected | `RECOVERY_REQUIRED → REBALANCING → COMPLETED`, residual 1.50 bps | scenario D, `test_leg_two_rejection_recovers_automatically` |
+| First leg partially filled | Hedge sized from what filled (3000 → 3 BTC), not what was asked | scenario C |
+| Second leg partially filled | Shortfall detected and traded away | `test_leg_two_partial_fill_triggers_a_rebalance` |
+| Request times out | Venue queried by client order id — never blindly retried | `test_timeout_does_not_double_hedge` |
+| Venue disconnects | Cycle refused before taking exposure | scenarios E, F |
+| Spread blows out / data stale | Refused on execution-quality grounds | scenario G |
+| 15 % adverse move on a levered book | Margin level 432 % → 68 %, risk ladder to KILL_SWITCH | scenario I |
+| Process restarts mid-cycle | Rebuilt from the database, reconciled, resumed only if unambiguous | scenario J |
+| API process dies with a hedge open | Watchdog flattens in ~35 s; restarted API refuses to trade | Docker crash drill |
+
+Hard limits (max order and position notional, daily loss per venue, orders per
+minute) sit in front of every venue; orders that only reduce exposure always
+pass, so the book can always be flattened. Details:
+[RISK_ENGINE.md](docs/RISK_ENGINE.md), [FAILURE_RECOVERY.md](docs/FAILURE_RECOVERY.md).
+
+## Screenshots
+
+Captured from the running application on the recorded Delta + Hyperliquid
+session (`make screenshots`), with a hedged BTC position opened through the API.
+
+| | |
+|---|---|
+| ![Hedge pairs: a 5000-contract Delta position hedged with 5 BTC on Hyperliquid, hedge ratio 0.99985, residual 1.50 bps](docs/images/hedge-pairs.png) | ![Hedge calculator: the step-by-step derivation of a hedge quantity](docs/images/hedge-calculator.png) |
+| **Hedge pairs** — both legs, ratio, residual, basis, funding and costs | **Hedge calculator** — the full derivation behind a hedge size |
+| ![Risk dashboard](docs/images/risk-dashboard.png) | ![Fault injection: injectable failures, recovery controls, reconciliation and the ten scenarios](docs/images/fault-injection.png) |
+| **Risk dashboard** — thresholds, margin and limits | **Fault injection** — break it on purpose and watch it recover |
+
+## Quick start
 
 ```bash
 git clone https://github.com/pranay123-stack/cross-venue-delta-neutral-hedging-engine
@@ -89,474 +187,176 @@ cp .env.example .env
 docker compose up --build
 ```
 
-| | |
-|---|---|
-| Dashboard | <http://localhost:5174> |
-| API docs (OpenAPI) | <http://localhost:8001/docs> |
+Dashboard <http://localhost:5174> · API docs <http://localhost:8001/docs>. The
+backend polls both exchanges every 3 seconds (no API keys — the data is public)
+and a separate **watchdog** container guards the book. Offline, or if a venue is
+unreachable: `HEDGELAB_MARKET_DATA_SOURCE=replay docker compose up --build`.
 
-The backend polls both venues every 3 seconds. No API key is needed — the data
-is public. A separate **watchdog** container guards the book (see §11).
-
-Offline, or if a venue is unreachable, replay the bundled recording of a real
-session instead:
+Without Docker (Python 3.12, Node 20):
 
 ```bash
-HEDGELAB_MARKET_DATA_SOURCE=replay docker compose up --build
+make install     # backend venv with pinned versions + frontend packages
+make check       # lint, strict types, tests, frontend build, browser tests
 ```
 
-**See it work.** The 25-step acceptance run drives the whole engine on the live
-books and exits non-zero if any step fails; then the ten failure scenarios, the
-contract conversions, and a month of real history through the hedge maths:
+## Demo commands and expected results
 
-```bash
-docker compose exec backend hedgelab demo
-docker compose exec backend hedgelab scenario run-all
-docker compose exec backend hedgelab instruments pairs
-docker compose exec backend hedgelab backtest run
-```
-
-**Without Docker** — the test suite needs nothing but Python, and no network:
-
-```bash
-cd backend
-python -m venv .venv && .venv/bin/pip install -e ".[dev]"
-.venv/bin/python -m pytest tests/ -q                 # 501 tests, ~2 min, offline
-
-export HEDGELAB_DATABASE_URL="sqlite+aiosqlite:///$PWD/hedgelab.db"
-.venv/bin/hedgelab demo                              # the 25 steps, on live data
-
-cd ../frontend && npm ci && npm run test:e2e         # browser tests (uses system Chrome)
-```
-
----
-
-## 3. How a hedge works
-
-You hold **5000 BTCUSD contracts long on Delta**.
-
-1. **Convert through coins.** One Delta contract is 0.001 BTC, so the position
-   is 5 BTC. Hyperliquid sizes in coins, so the hedge is **short 5 BTC**.
-   Matching raw quantities ("sell 5000") would be a 1000× error.
-2. **Choose what "equal" means** — one of nine objectives: the same coins, the
-   same dollar value, the same sensitivity to price, or adjusted for funding,
-   costs or the measured β between the venues (§8).
-3. **Round to what the venue accepts** — Hyperliquid's 0.00001 BTC size step,
-   its five-significant-figure price rule and its $10 minimum order; Delta's
-   whole contracts and 0.5 tick.
-4. **Check it is safe to trade** — margin on both venues, fresh data, a sane
-   spread, no kill switch, and the hard limits (§11).
-5. **Execute two legs.** Leg 1 on Delta; then size leg 2 from what *actually*
-   filled (3000 filled → hedge 3 BTC, not 5); then leg 2 on Hyperliquid. Every
-   step is written to the database *before* it happens.
-6. **Recover if a leg fails** — rejected, partially filled, timed out or
-   disconnected each have a specific, tested response (§9).
-7. **Keep it hedged.** Funding is charged on each venue's own clock, leftover
-   exposure beyond the pair's tolerance is rebalanced, and risk is watched.
-8. **Account for it** — price P&L per leg, fees, spread, funding per venue and
-   FX, asserted to add up to the net; and reconciled against the venues'
-   records.
-
----
-
-## 4. Why two venues are hard
-
-| | Delta Exchange (India) | Hyperliquid |
+| Command | What it does | Expected |
 |---|---|---|
-| Quantity unit | contracts | coins |
-| One unit is | `contract_value` base units (0.001 BTC) | 1 coin, sized to `szDecimals` |
-| Funding | every 8 h (4 h for PAXG), published in **percent** | every **hour**, published as a **fraction** |
-| Fees | 2 / 5 bps maker / taker (PAXG 1 / 1) | 1.5 / 4.5 bps (base tier) |
-| Margin | 0.5 % initial on BTC (200×), **rising with size** | 1 / `maxLeverage` (40× BTC) |
-| Settlement | USD | USDC |
-| Price tick | fixed per product (0.5 on BTC) | five significant figures — **depends on the price** |
-| Minimum order | 1 contract | **$10** of notional |
-| Order types | `gtc`, `ioc` | `Alo`, `Ioc`, `Gtc`; no plain market order |
+| `docker compose exec backend hedgelab demo` | 25-step acceptance run on live data | `25/25 steps passed` |
+| `make demo` | the same, offline on the recorded session | `25/25 steps passed` |
+| `docker compose exec backend hedgelab scenario run-all` | ten failure scenarios | `10/10 scenarios passed` |
+| `docker compose exec backend hedgelab instruments pairs` | the four pairs and their unit conversions | `1 BTCUSD contract … = 0.001 BTC …` |
+| `make backtest` | 30 days of real history, impact from recorded books | a table like the one below |
 
-From the catalogue generated from the venues' own metadata:
+## Testing and benchmark methodology
 
-```
-1 BTCUSD  contract (0.001 BTC)  = 0.001 BTC  on Hyperliquid
-1 ETHUSD  contract (0.01 ETH)   = 0.01 ETH
-1 PAXGUSD contract (0.001 PAXG) = 0.001 PAXG
-1 SOLUSD  contract (1 SOL)      = 1 SOL
-```
+| Check | Result | How it is measured |
+|---|---|---|
+| Backend tests | **501 passed**, offline | `make test` — unit, Hypothesis property tests, integration, API, WebSocket. A fixture fails any test that touches the network; inputs are committed recordings of the real venues |
+| Browser tests | **10 passed** | `make e2e` — Playwright on Chrome against the real API and dashboard on replay data |
+| Coverage | **88 %** overall, 93–100 % on the calculation core | `pytest --cov` |
+| Lint / types | ruff clean · mypy strict clean (86 files) · tsc clean | `make lint typecheck` |
+| Acceptance / scenarios | 25/25 · 10/10, on replay and live in Docker | `hedgelab demo`, `scenario run-all` |
+| Clean install | pinned install from scratch passes lint, types and all 501 tests | `pip install -c backend/requirements-lock.txt -e ".[dev]"` |
+| HTTP throughput | 219 req/s at 50 clients, 154 req/s at 200 — **0 errors** at both | `backend/scripts/load_test.py` against one replay-mode process on SQLite, on a laptop CPU in `powersave` (~1 GHz); absolute rates are machine-specific |
 
-BTC and PAXG share a ratio of 0.001 while one contract is worth ~$82 against
-~$4 — equal ratios do not mean equal economics, which is why the engine converts
-through base units on every call rather than caching a ratio.
+**What the throughput figure is — and is not.** It measures how many dashboard
+and API *reads* (market data, positions, risk, hedge calculations) one Python
+process serves. It is **not** market-data latency (the feed polls every 3 s)
+and **not** trade-execution latency (no real orders are sent). At 200 clients
+nothing fails, but database-backed endpoints reach ~3 s p99 and the price loop,
+which shares the event loop, refreshes less often.
 
-**The funding-unit trap.** Delta's `funding_rate` is a *percent per interval*
-(`0.01` = 0.01 % per 8 h); Hyperliquid's is a *fraction per hour*
-(`0.0000125`). Compared raw, one venue looks 100× wrong on units and 8× wrong
-on interval. Both are normalised at the edge of the system, and funding is
-always settled for the same span of hours on both venues — one Delta interval
-is eight Hyperliquid ones.
-
-**The inverse-contract trap.** An inverse perpetual is sized in dollars and
-settled in coin, so its price sensitivity is `N / entry` while the coins it
-represents are `N / mark`. For $500k entered at 100,000 and marked at 125,000,
-matching coins says 4 BTC and matching sensitivity says 5 — a 25 % difference.
-Neither shipped venue lists a live inverse perp, so this is verified on a real
-one, Bybit's BTCUSD (§13).
-
-**Size-based margin.** Delta raises the margin rate as a position grows:
-BTCUSD is 200× up to $100k, 66.7× at $500k and 7.8× at $5M. A flat 0.5 % would
-make an $8M position look like it needs $41k of margin; it needs $1.69M.
-
----
-
-## 5. System flow
-
-```
-            Delta /v2/tickers, /v2/l2orderbook        Hyperliquid metaAndAssetCtxs, l2Book        Kraken USDC/USD
-                              └───────────────────────────┬──────────────────────────────────────┘
-                                                          ▼
-                              LiveCollector  ──▶  MarketFrame (books, funding, FX; units normalised)
-                                                          │         (or: replay a recorded session)
-                                                          ▼
-                                       MarketFeed  (+ labelled stress overlays)
-                                ┌─────────────┬───────────┴──────────┬────────────────┐
-                                ▼             ▼                      ▼                ▼
-                          statistics      FX service           paper venues      WebSocket → dashboard
-                          (vol, ρ, β)                     (fills walk the real book)
-                                │                                    ▲
-                                ▼                                    │
-      convert units ─▶ size the hedge ─▶ risk gate ─▶ hard limits ─▶ execute two legs ─▶ recover
-                                                          │                                  │
-                                                     dry-run payload                         ▼
-                                                  (venue-native order)      persist ─▶ reconcile ─▶ P&L
-                                                                                       ▲
-                                     watchdog (separate process): heartbeat stops ─▶ flatten + kill switch
-```
-
----
-
-## 6. Architecture
-
-```
-   React + TS dashboard ─── FastAPI (REST + WebSocket, OpenAPI)        hedgelab CLI
-                                       │                                    │
-            ┌──────────────────────────▼────────────────────────────────────▼──┐
-            │ HedgeLabService — the composition root; API and CLI are thin     │
-            │ shells over it, so they cannot disagree about behaviour.          │
-            └──┬────────┬────────┬───────────┬───────────────┬──────────┬──────┘
-             hedge/   risk/   costs/     execution/     reconciliation/  faults/
-             objectives margin funding   16-state cycle  positions,       14 faults
-             optimiser  ladder P&L       fill ledger     fills, funding
-               └────────┴────────┴─────┬─────┴───────────────┴──────────┘
-            ┌──────────────────────────▼─────────────────────────────────────┐
-            │ domain/ — InstrumentSpec · QuantityConverter · Exposure ·       │
-            │ Position · Order · Decimal maths.  Pure, no I/O.                │
-            └──┬──────────────────────────────────────────┬──────────────────┘
-             venues/                                    marketdata/
-             paper Delta + Hyperliquid over one          sources → collector → frames
-             matching engine; hard-limit guard;          → feed (+ overlays); history,
-             dry-run payloads; live stubs (raise)        stats, impact, FX, rate limits
-               │
-            db/ — SQLAlchemy 2 async · PostgreSQL / SQLite · Alembic (22 tables)        ops/watchdog.py
-```
-
-**The dependency rule.** `domain/`, `hedge/`, `risk/` and `costs/` are pure
-functions of their arguments — no network, no database — so the same code runs
-live, on a replay, in the backtest and in tests. Only
-`marketdata/sources.py` touches the network, through public read-only
-endpoints with no credentials.
-
-**Decimal everywhere, strings on the wire.** Binary floats break exchange
-rounding rules. The one exception is the statistics module, where sampling error
-is many orders of magnitude larger than float precision.
-
-```
-backend/src/hedgelab/
-  domain/            instrument spec, quantity conversion, exposure, orders, positions
-  instruments/       registry, generated YAML catalogue, `sync` from venue metadata
-  marketdata/        sources (Delta, Hyperliquid, Kraken), collector, frames, feed,
-                     history, stats, impact, scenarios (overlays), FX, rate limits
-  hedge/             calculator (14-step derivation), nine objectives, optimiser
-  execution/         coordinator (two-leg state machine), rebalancer, fill ledger
-  risk/              per-pair and portfolio risk, margin and liquidation
-  costs/             funding projection, P&L attribution
-  venues/            paper Delta + Hyperliquid, matching engine, guard, payloads, live stubs
-  reconciliation/    three-way positions; fill / funding records against venue records
-  faults/            fault injector (14 kinds)
-  scenarios/         the 25-step acceptance run and ten failure scenarios
-  backtest/          replay of real hourly history
-  ops/               the independent watchdog
-  api/ · cli.py · service.py · config.py · db/
-frontend/            React dashboard (8 pages) + Playwright tests
-backend/tests/       unit, property, integration; data/ holds the real recordings
-```
-
----
-
-## 7. Real market data
-
-* **Venue clients** (`marketdata/sources.py`) — Delta Exchange (India)
-  `/v2/products`, `/v2/tickers`, `/v2/l2orderbook`, `/v2/history/candles`;
-  Hyperliquid `info` (`metaAndAssetCtxs`, `l2Book`, `candleSnapshot`,
-  `fundingHistory`); Kraken's USDC/USD and USDT/USD so FX is measured, not an
-  assumed peg. Units are normalised here and nowhere else.
-* **Frames** — one synchronised poll of every instrument. A venue that fails to
-  answer keeps its last *real* quote, which ages into staleness and blocks
-  execution.
-* **Recording and replay** — `hedgelab market record` writes frames to gzipped
-  JSON lines; tests, scenarios and the offline demo replay them deterministically.
-* **History** — `hedgelab market history` fetches real candles and *settled*
-  funding; it seeds the volatility/correlation estimator at startup and drives
-  the backtest.
-* **Specs are generated, not transcribed** — `hedgelab instruments sync` builds
-  the catalogue from each venue's metadata (contract value, tick, size
-  decimals, fees, margin and its scaling, funding interval, venue ids) and marks
-  the few fields neither venue publishes.
-* **Stress as labelled overlays** — gaps, spread blow-outs, thin depth, frozen
-  feeds and outages are applied *on top of* the real book, reported in
-  `/api/market`, and removed with one call. Real BTC spreads are ~0.1 bps, so
-  the spread stress has a 100 bps floor; a ×20 multiplier alone never gets near
-  a dislocated market.
-
----
-
-## 8. The hedge engine
-
-**Nine objectives** — base-asset-, notional-, quote-P&L- and
-account-currency-P&L-neutral; custom ratio; partial; funding-adjusted and
-cost-adjusted (mean-variance, `h* = β − k/(λσ_h²)`); and risk-weighted (β).
-Every result carries a 14-step derivation (formula and value at each stage),
-rendered in the dashboard and stored in the audit log.
-
-**A quantity optimiser** searches the venue's lattice instead of blindly
-rounding: exact, step search over seven named priorities, or a weighted score,
-cross-checked against brute force.
-
-**Statistics measured from the market.** The estimator is seeded at startup
-from real 5-minute candles and keeps sampling the live feed. On the committed
-history it measures Delta↔Hyperliquid BTC correlation at **0.9953** and
-**β = 0.985 ± 0.003**: Hyperliquid's BTC moves about 1.5 % more than Delta's —
-distinguishable from 1 on three days of data, not on the first eighteen hours,
-and the engine reports both.
-
----
-
-## 9. Execution and recovery
-
-A supervised two-leg cycle: **sixteen states**, transitions declared as data and
-validated on every move, each persisted *before* the side effect it describes —
-which is what lets restart recovery tell "submitted, outcome unknown" from
-"never submitted".
-
-| What goes wrong | What the engine does |
-|---|---|
-| Leg 1 fills partially | Hedge only what filled |
-| Leg 2 is rejected | `RECOVERY_REQUIRED` → rebalance → `COMPLETED` |
-| Leg 2 fills partially | Detect the shortfall and trade it away |
-| A request times out | Ask the venue for the client order id — never retry blindly (that is how a book gets double-hedged) |
-| A venue disconnects | Refuse the cycle before taking exposure; resume after reconnect |
-| Spread blows out / data goes stale | Refuse on execution-quality grounds |
-| The process restarts | Rebuild from the database, reconcile, resume only if nothing is ambiguous |
-
-Paper fills walk the real recorded or live order book, so slippage comes from
-the depth that was actually there.
-
----
-
-## 10. Risk, margin and costs
-
-* **Risk at two levels** — per pair and portfolio, a four-level ladder (normal →
-  warning → danger → emergency/kill) with prescribed actions: pause, reduce,
-  flatten. The **kill switch** verifies the book actually reached flat, and is
-  persisted so it survives a restart.
-* **Margin and liquidation** in closed form for linear and inverse contracts,
-  with Delta's size-based margin schedule.
-* **Cost attribution that adds up** — the components are asserted to sum to the
-  net:
-
-```
-source_price_pnl   price P&L on the Delta leg
-hedge_price_pnl    price P&L on the Hyperliquid leg (nearly cancels the first)
-fees               5 bps Delta + 4.5 bps Hyperliquid, taker
-spread / slippage  measured against the mid at submit
-funding            each venue's real rate, on its own clock
-fx                 restating USDC at the measured USDC/USD rate
-───────────────
-NET
-```
-
----
-
-## 11. The live-readiness safety layer
-
-Everything a live deployment needs between the strategy and a venue — built and
-tested with no money at risk.
-
-| Layer | What it does |
-|---|---|
-| **Hard limits** (`venues/guard.py`) | Every venue is wrapped: max order notional, max position notional, max daily loss per venue, max orders per minute. Orders that only reduce exposure pass the size and loss limits, so the book can always be flattened. Refusals are recorded and shown in `/api/system/status`. |
-| **Rate limiting and backoff** (`marketdata/ratelimit.py`) | A process-wide per-host weight budget (Hyperliquid: 900 of its 1200 weight a minute, with its published per-request weights); 429/5xx and dropped connections retried with exponential backoff, jitter and `Retry-After`. |
-| **Fill ledger** (`execution/fill_ledger.py`) | Positions from execution reports that are correct whatever order they arrive in: duplicates ignored, late fills replayed in the venue's sequence, overfills flagged. |
-| **Dry-run payloads** (`venues/payloads.py`) | Every paper order is also built in the exact form Delta's `POST /v2/orders` and Hyperliquid's `POST /exchange` take — unsigned, never sent — and checked against each venue's rules. All 31 orders from the demo and scenarios would be accepted. It found that **neither venue supports fill-or-kill**. |
-| **Record reconciliation** (`reconciliation/venue_records.py`) | Fills missing on either side, mismatched fills, venue positions their own fills do not explain, funding charged versus expected, equity drift. |
-| **Independent watchdog** (`ops/watchdog.py`) | A separate process sharing only the database. When the API's heartbeat stops, it builds its own venue connections, flattens, verifies flat, and leaves the kill switch engaged so a restarted API refuses to trade. |
-
-**Crash drill (Docker).** A hedged book — 2000 Delta contracts long, 2 BTC
-Hyperliquid short — was left open and the backend container stopped. **35
-seconds later** the watchdog had closed both legs and verified flat; the
-restarted backend came up with the kill switch engaged and refused a new hedge
-(HTTP 409).
-
----
-
-## 12. Results on real data
-
-**Backtest — 30 days of real hourly closes and settled funding**
-(2026-09-22 → 2026-10-22), long 1 BTC on Delta, hedged on Hyperliquid:
-
-| Hedge ratio | Price drawdown removed | Net P&L | Funding |
-|---|---|---|---|
-| 1.00 (full) | **98.3 %** | +$275.87 | +$302.84 |
-| 0.50 (partial) | **50.6 %** | −$2,165.74 | +$21.00 |
-| ~0.00 (none) | **0.0 %** | −$4,606.87 | −$260.78 |
-
-Risk reduction tracks the hedge ratio linearly — that is the correctness check.
-The full hedge was *paid* to hold this month, for a specific reason: Delta's BTC
-funding averaged +0.0035 % per 8 h, so the long Delta leg **paid $261**, while
-Hyperliquid's rate sat at its 0.00125 %/h baseline 59 % of the time, so the
-short leg **received $564**. One month of one pair — a measured carry, not a
-forecast.
-
-Reproduce: `hedgelab backtest run --history backend/tests/data/history.json.gz`
-(add `--books backend/tests/data/live_frames.jsonl.gz` to charge price impact
-measured on the recorded books).
-
-**Price impact measured on 500 real recorded books** (median sweep cost):
-Delta BTC 0.03 bps up to $250k and 0.34 bps at $5M; Hyperliquid SOL 4.8 bps at
-$2.5M; Hyperliquid PAXG only about $50k deep at ten levels.
-
-**Failure scenarios on real books** — a 15 % drop on an 18 BTC position takes
-Delta's margin level from 432 % to 68 % and the risk engine to KILL_SWITCH; an
-8 % gap that would cost ~$37k unhedged moves the hedged book ~$36.
-
----
-
-## 13. Testing
-
-```
-501 backend tests, offline     unit · property-based · integration · API · WebSocket
-  6 browser tests              Playwright on Chrome, real API + dashboard on replay data
- 25/25 acceptance steps        on replay, and live in Docker
- 10/10 failure scenarios       on replay, and live in Docker
- 87 % line coverage            ruff clean · mypy strict clean · tsc clean
-  0 errors under load          716 req/s at 50 clients; 579 req/s at 200 (one process)
-```
-
-**The data is real and committed** (`backend/tests/data/`): 500 frames of a
-live Delta + Hyperliquid session, 30 days of real candles and settled funding
-for all eight instruments, 30 days of Bybit's inverse BTCUSD, and captured raw
-API responses for the clients' parsing tests. An autouse fixture fails any test
-that touches the network.
-
-| Kind | What it covers |
-|---|---|
-| Unit | quantity conversion, objectives, optimiser, risk, margin scaling, state machine, paper venues, costs |
-| Property-based (Hypothesis) | rounding never over-hedges, conversions round-trip, P&L always balances, books stay valid under any stress sequence, ledger is order-independent — each mutation-checked |
-| Real-data | specs vs venue metadata, client unit conversions on captured responses, statistics vs direct computation, funding settlement times vs the venue's own history, inverse maths on a real inverse perp |
-| Integration | full workflow on SQLite, API surface, WebSocket, all ten scenarios, the acceptance run |
-| Browser | every page renders, the calculator, a hedge from the dashboard, an outage injected and cleared |
-| Load | `scripts/load_test.py` against a running API |
-| Crash drill | the watchdog flattening a book after the backend is killed |
-
-**Bugs the tests and real data actually found** — among them: the
-mean-variance objective dividing by the wrong variance (hedge ratio → 0); the
-volatility estimator scaling by the configured rather than observed interval (a
-silent 3.4× error); a kill switch defeatable by a partial fill; funding settled
-as "one interval" per venue (8 hours of Delta against 1 of Hyperliquid); a
-backtest rebalance sizing an inverse hedge from the mark instead of the entry
-(drifting across 699 sizes in a month); a scenario that asked for a position no
-real account could open; and a watchdog that flattened a backend still
-starting up. All are pinned by tests — the full list is in
+Mutation checks confirm the key tests can fail: breaking the rounding, the fill
+ledger's ordering, overlay clearing, or kill-switch persistence each turns a
+test red. The bugs these tests and real data found are listed in
 [TESTING.md](docs/TESTING.md).
 
+## Backtest on real history
+
+**What was run:** long 1000 BTCUSD contracts (1 BTC) on Delta Exchange, hedged
+with Hyperliquid BTC, at three hedge ratios.
+
+| Hedge ratio | Price drawdown removed | Net P&L | Funding | Fees | Spread cost |
+|---|---|---|---|---|---|
+| 1.00 (full) | **98.3 %** | +$275.87 | +$302.84 | $81.73 | $0.79 |
+| 0.50 | **50.6 %** | −$2,165.74 | +$21.00 | $62.37 | $0.52 |
+| ~0.00 (none) | **0.0 %** | −$4,606.87 | −$260.78 | $43.01 | $0.26 |
+
+* **Interval:** 719 hourly steps, 2026-09-22 12:00 → 2026-10-22 11:00 UTC.
+* **Prices:** hourly candle closes from Delta's `/v2/history/candles` and
+  Hyperliquid's `candleSnapshot`, on timestamps both venues printed. Closes are
+  traded prices, not mids.
+* **Funding:** each venue's *settled* rates (Delta `FUNDING:` candles,
+  Hyperliquid `fundingHistory`), charged on the venue's own clock at UTC
+  multiples of its interval — Delta's 00/08/16 UTC schedule is confirmed against
+  its own history.
+* **Fees:** base-tier taker fees, 5 bps Delta and 4.5 bps Hyperliquid, on entry
+  and on rebalances. **Exit costs are not charged.**
+* **Slippage:** half the spread measured when the specs were generated, or —
+  with `--books` — the median cost of sweeping the 500 recorded order books.
+* **FX:** USDC/USD measured from Kraken when the backtest runs, held constant.
+
+Risk reduction tracking the hedge ratio linearly is the correctness check. The
+full hedge earned carry in this month for a specific reason: Delta's BTC
+funding averaged +0.0035 % per 8 h, so the long Delta leg **paid $261**, while
+Hyperliquid's rate sat at its 0.00125 %/h baseline 59 % of the time, so the
+short leg **received $564**. **This is one month of one pair — a measurement of
+the past, not a forecast and not evidence of a profitable strategy.** Funding
+rates change sign, and a displayed funding spread is not realised carry.
+
+Reproduce: `make backtest`, or
+`hedgelab backtest run --history backend/tests/data/history.json.gz --ratio 0.5`.
+
+## Engineering design decisions
+
+* **Decimal for money and quantities.** Exchange lattices are decimal; binary
+  floats produce rejected orders. Floats appear only in the statistics module.
+* **Write-ahead state machine.** Each transition is persisted before its side
+  effect, which is what lets restart recovery tell "submitted, outcome unknown"
+  from "never sent".
+* **Units normalised at the edge, once.** Funding, quantities and settlement
+  currencies are converted in the venue clients; nothing downstream compares raw
+  venue fields.
+* **Specs generated from the venues, not typed in.** Venue behaviour lives in
+  data; the engine never branches on a symbol.
+* **Real recordings instead of a price simulator.** The switch from a simulator
+  exposed bugs it had hidden — see the [case study](docs/ENGINEERING_CASE_STUDY.md#trade-offs).
+* **Stress as labelled overlays.** Crashes and spread blow-outs are applied on
+  top of the real book and shown as hypothetical, never mixed into the data.
+* **Safety below the strategy.** Hard limits wrap every venue; the watchdog is a
+  separate process that shares only the database.
+* **One process owns the book.** Two coordinators would both trade the same
+  residual; multi-process operation needs leader election first.
+
+## API and CLI
+
+* **REST + WebSocket API** — 59 paths, OpenAPI at `/docs`: hedge calculation,
+  optimisation and execution, risk and portfolio, P&L and funding, market feed
+  and stress overlays, fault injection, reconciliation, dry-run orders,
+  scenarios, system status. Reference: [API.md](docs/API.md).
+* **CLI** — `hedgelab demo | scenario | calculate | optimize | backtest |
+  instruments sync | market record | market history | watchdog | serve`.
+  Run `hedgelab --help`; every `make` target is listed by `make help`.
+* **Configuration** — `HEDGELAB_*` environment variables:
+  [DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+## Roadmap and non-goals
+
+Next: testnet adapters for both exchanges, reconciliation against authenticated
+account state, shadow execution on live data, execution telemetry, and a
+recording of a real volatile market. Full priorities and acceptance criteria:
+[ROADMAP.md](docs/ROADMAP.md).
+
+**Non-goals:** high-frequency arbitrage (it polls every 3 s and holds positions
+for hours to weeks); deciding *when* to trade (it hedges what you ask it to);
+live trading by default; synthetic market data.
+
+**Limitations, plainly:** no signed live order adapters; paper fills cross the
+real book instantly with no queue position or matching latency; one calm
+17-minute recording and 30 days of hourly history; Hyperliquid's tiered margin
+and both venues' fee tiers flattened to the base tier; Delta's margin scaling
+follows ccxt's formula rather than Delta's own page; single process.
+
+## Contributing
+
+Setup, ground rules (real data only, no live trading path, never weaken a risk
+control, a test for every behaviour change) and the pull-request checklist are
+in [CONTRIBUTING.md](CONTRIBUTING.md). CI runs ruff, strict mypy, the backend
+suite, the frontend build, the browser tests and a dependency audit.
+
+## Security and responsible use
+
+The software holds no credentials and can place no real order. Report
+vulnerabilities privately as described in [SECURITY.md](SECURITY.md), which also
+covers what to change before extending it towards live trading. Backtest and
+paper results describe the recorded past; nothing here is investment advice,
+and trading these derivatives may be restricted where you live.
+
+## License
+
+[MIT](LICENSE).
+
+## Collaboration
+
+This engine is a foundation for further work: authenticated and testnet
+exchange integrations, more venues, funding and basis analytics, execution
+quality analysis, reconciliation against real account statements, or a review
+of your own hedging infrastructure. What is implemented, what is extension
+work, and what still needs research is laid out in
+[COLLABORATION.md](docs/COLLABORATION.md).
+
+To discuss it, open an issue or reach out through
+[github.com/pranay123-stack](https://github.com/pranay123-stack).
+
 ---
 
-## 14. Reference: CLI, API, configuration
-
-**CLI** (`hedgelab --help`)
-
-| Command | |
-|---|---|
-| `demo` | the 25-step acceptance run |
-| `scenario list \| run <A-J> \| run-all` | the ten failure scenarios |
-| `calculate`, `optimize` | size a hedge, with its derivation |
-| `backtest run [--history] [--books] [--ratio]` | replay real history |
-| `instruments list \| pairs \| sync [--write]` | the catalogue; regenerate it from the venues |
-| `market record \| history` | record live frames; fetch real history |
-| `watchdog [--once] [--kill-now]` | the independent kill switch |
-| `serve`, `init-db`, `status` | operations |
-
-**API** — 57 paths, full OpenAPI at `/docs`. The main groups: `/api/hedge/*`
-(calculate, optimize, execute, cycles), `/api/risk/*` and `/api/portfolio`,
-`/api/pnl`, `/api/funding/*`, `/api/market*` (feed state and stress overlays),
-`/api/fault-injection`, `/api/reconciliation*`, `/api/dry-run-orders`,
-`/api/scenarios`, `/api/system/status`, and the `/ws` stream. Details in
-[API.md](docs/API.md).
-
-**Configuration** — environment variables with the `HEDGELAB_` prefix:
-
-| Setting | Default | |
-|---|---|---|
-| `MARKET_DATA_SOURCE` | `live` | `live` polls the venues; `replay` steps a recording |
-| `MARKET_POLL_SECONDS` | `3` | live poll interval |
-| `MARKET_REPLAY_PATH` / `MARKET_HISTORY_PATH` | — | recording to replay; history to seed statistics |
-| `HARD_MAX_ORDER_NOTIONAL` | `3500000` | largest single order |
-| `HARD_MAX_POSITION_NOTIONAL` | `5000000` | largest position an order may leave |
-| `HARD_MAX_DAILY_LOSS_PER_VENUE` | `100000` | last-resort backstop per venue |
-| `HARD_MAX_ORDERS_PER_MINUTE` | `60` | stops a runaway order loop |
-| `STALE_DATA_THRESHOLD_SECONDS` | `15` | a quote older than this blocks execution |
-| `PAPER_STARTING_BALANCE` | `250000` | per paper venue |
-
-The full list is in [DEPLOYMENT.md](docs/DEPLOYMENT.md).
-
----
-
-## 15. Limitations, and what is left before live
-
-Stated plainly:
-
-* **It has never traded real money, and cannot.** The safety layer a live
-  deployment needs is built and tested; the **signed order adapters are not** —
-  Delta's authenticated REST and private WebSocket, Hyperliquid's signed
-  `exchange` actions through a trade-only agent wallet.
-* **Paper fills are instant.** They walk the real book at the moment of the
-  order, but nothing models matching latency, queue position or other traders.
-* **No volatile market recorded.** The recording is a calm 17 minutes; crashes
-  are imposed overlays, never a real event replayed.
-* **Delta's margin scaling follows ccxt's formula**, not Delta's page directly;
-  Hyperliquid's tiered margin and both venues' fee tiers are flattened to the
-  base tier. PAXG's 4-hourly funding schedule could not be confirmed from
-  history.
-* **Hyperliquid's tick is fixed at sync time** — it depends on the price level;
-  re-sync if a price crosses a power of ten.
-* **One process.** Under 4× load nothing fails, but database-backed pages slow
-  to ~3 s and the price loop refreshes less often.
-
-**The path to live:** testnet adapters for both venues → run the demo and
-scenarios on testnet → parse each venue's private fills, funding and balance
-into the reconciliation → shadow mode on live data (orders computed, not sent)
-→ tiny size with tight hard limits → scale only after reconciliation matches
-every day.
-
----
-
-## 16. Documentation
-
-| | |
-|---|---|
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | design decisions and why each one |
-| [HEDGE_ENGINE.md](docs/HEDGE_ENGINE.md) | the objectives, the maths, the estimator |
-| [EXECUTION_ENGINE.md](docs/EXECUTION_ENGINE.md) | the sixteen-state machine and its recovery paths |
-| [RISK_ENGINE.md](docs/RISK_ENGINE.md) | margin, liquidation, thresholds, kill switch |
-| [FAILURE_RECOVERY.md](docs/FAILURE_RECOVERY.md) | the fourteen faults and their responses |
-| [PAPER_TRADING.md](docs/PAPER_TRADING.md) | why no real order can be placed |
-| [DATABASE.md](docs/DATABASE.md) · [API.md](docs/API.md) | schema and every endpoint |
-| [TESTING.md](docs/TESTING.md) | what is covered, what is not, and every bug found |
-| [DEPLOYMENT.md](docs/DEPLOYMENT.md) · [DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) | running it, and a guided tour |
-| [PROJECT_STATUS.md](PROJECT_STATUS.md) | what is done, what is not, the live extension points |
+**Documentation:** [Case study](docs/ENGINEERING_CASE_STUDY.md) ·
+[Architecture](docs/ARCHITECTURE.md) · [Hedge engine](docs/HEDGE_ENGINE.md) ·
+[Execution](docs/EXECUTION_ENGINE.md) · [Risk](docs/RISK_ENGINE.md) ·
+[Failure recovery](docs/FAILURE_RECOVERY.md) · [Paper trading](docs/PAPER_TRADING.md) ·
+[Database](docs/DATABASE.md) · [API](docs/API.md) · [Testing](docs/TESTING.md) ·
+[Deployment](docs/DEPLOYMENT.md) · [Demo script](docs/DEMO_SCRIPT.md) ·
+[Roadmap](docs/ROADMAP.md) · [Collaboration](docs/COLLABORATION.md) ·
+[Project status](PROJECT_STATUS.md)

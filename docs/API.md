@@ -1,6 +1,6 @@
 # API
 
-FastAPI, 57 routes, OpenAPI at `/docs`. Everything under `/api`.
+FastAPI, 59 paths (67 operations), OpenAPI at `/docs`. Everything under `/api`.
 
 **Decimals are strings.** A quantity that round-trips through a JSON float can
 come back off the venue's lattice, and the client would then display a number
