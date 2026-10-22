@@ -1,0 +1,60 @@
+{
+ "success": true,
+ "result": {
+  "oi_value_usd": "91723845.9600",
+  "mark_change_24h": "-2.6209",
+  "close": 81603.5,
+  "time": "2026-10-21T12:59:54.583870395Z",
+  "underlying_asset_symbol": "BTC",
+  "spot_price": "81652.5",
+  "tags": [
+   "layer_1"
+  ],
+  "price_band": {
+   "lower_limit": "77526.76594725",
+   "upper_limit": "85687.47815223"
+  },
+  "leverage": 200,
+  "contract_type": "perpetual_futures",
+  "mark_low_24h": "81596.03469826",
+  "oi_reduce_only_mode": false,
+  "greeks": null,
+  "oi_value": "1123.3440",
+  "sort_priority": 1,
+  "oi_contracts": "1123344",
+  "mark_high_24h": "84856.9865859",
+  "oi_value_symbol": "BTC",
+  "mark_price": "81609.14671554",
+  "product_id": 27,
+  "turnover_symbol": "USD",
+  "high": 84865.5,
+  "low": 81589.0,
+  "quotes": {
+   "ask_iv": null,
+   "ask_size": "678",
+   "best_ask": "81604",
+   "best_bid": "81603.5",
+   "bid_iv": null,
+   "bid_size": "4541",
+   "impact_mid_price": null,
+   "mark_iv": "-0.58138877"
+  },
+  "turnover": 1189380423.3885055,
+  "product_trading_status": "operational",
+  "mark_basis": "-0.00053351",
+  "symbol": "BTCUSD",
+  "size": 14247422,
+  "contract_value": "0.001000000000000000",
+  "open": 83476.5,
+  "oi": "1123.3440",
+  "ltp_change_24h": "-2.2437",
+  "oi_change_usd_6h": "25775649.5000",
+  "volume": 14247.422000019855,
+  "tick_size": "0.500000000000000000",
+  "timestamp": 1792674410084758,
+  "turnover_usd": 1189380423.3885055,
+  "description": "Bitcoin Perpetual",
+  "funding_rate": "-0.003628744458207038",
+  "top_tag": "crypto"
+ }
+}

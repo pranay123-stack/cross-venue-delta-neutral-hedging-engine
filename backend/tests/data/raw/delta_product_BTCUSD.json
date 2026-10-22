@@ -1,0 +1,153 @@
+{
+ "success": true,
+ "result": {
+  "initial_margin_scaling_factor": "0.0000025",
+  "underlying_asset": {
+   "id": 13,
+   "name": "Bitcoin",
+   "networks": [],
+   "symbol": "BTC",
+   "precision": 8,
+   "base_withdrawal_fee": "0.000000000000000000",
+   "interest_credit": false,
+   "interest_slabs": null,
+   "kyc_deposit_limit": "0.000000000000000000",
+   "kyc_withdrawal_limit": "0.000000000000000000",
+   "min_withdrawal_amount": "0.000000000000000000",
+   "minimum_precision": 4,
+   "sort_priority": 1,
+   "variable_withdrawal_fee": "0.000000000000000000"
+  },
+  "settlement_time": null,
+  "annualized_funding": "10.95",
+  "position_notional_limit": "5000000",
+  "maintenance_margin_scaling_factor": "0.00000125",
+  "insurance_fund_margin_contribution": "5",
+  "state": "live",
+  "quoting_asset": {
+   "id": 14,
+   "name": "US Dollar",
+   "networks": [],
+   "symbol": "USD",
+   "precision": 8,
+   "base_withdrawal_fee": "0.000000000000000000",
+   "interest_credit": false,
+   "interest_slabs": null,
+   "kyc_deposit_limit": "0.000000000000000000",
+   "kyc_withdrawal_limit": "0.000000000000000000",
+   "min_withdrawal_amount": "0.000000000000000000",
+   "minimum_precision": 2,
+   "sort_priority": 3,
+   "variable_withdrawal_fee": "0.000000000000000000"
+  },
+  "contract_type": "perpetual_futures",
+  "tick_size": "0.5",
+  "settlement_price": null,
+  "disruption_reason": null,
+  "maintenance_margin": "0.25",
+  "basis_factor_max_limit": "10.95",
+  "initial_margin": "0.5",
+  "contract_value": "0.001",
+  "contract_unit_currency": "BTC",
+  "barrier_price": null,
+  "launch_time": "2023-12-18T13:10:39Z",
+  "is_quanto": false,
+  "auction_start_time": "2026-10-17T20:34:26Z",
+  "liquidation_penalty_factor": "0.5",
+  "trading_status": "operational",
+  "ui_config": {
+   "chart": "trade",
+   "default_trading_view_candle": "60",
+   "leverage_slider_values": [
+    1,
+    10,
+    25,
+    50,
+    100,
+    150,
+    200
+   ],
+   "price_clubbing_values": [
+    0.5,
+    1,
+    10,
+    50
+   ],
+   "show_bracket_orders": false,
+   "sort_priority": 1,
+   "tags": []
+  },
+  "notional_type": "vanilla",
+  "position_size_limit": 125000,
+  "maker_commission_rate": "0.0002",
+  "strike_price": null,
+  "impact_notional": "1000000",
+  "settling_asset": {
+   "id": 14,
+   "name": "US Dollar",
+   "networks": [],
+   "symbol": "USD",
+   "precision": 8,
+   "base_withdrawal_fee": "0.000000000000000000",
+   "interest_credit": false,
+   "interest_slabs": null,
+   "kyc_deposit_limit": "0.000000000000000000",
+   "kyc_withdrawal_limit": "0.000000000000000000",
+   "min_withdrawal_amount": "0.000000000000000000",
+   "minimum_precision": 2,
+   "sort_priority": 3,
+   "variable_withdrawal_fee": "0.000000000000000000"
+  },
+  "spot_index": {
+   "id": 14,
+   "config": {
+    "price_alert_enabled": true,
+    "price_alert_group": "low_vol_coin",
+    "price_alert_shard": 1,
+    "quoting_asset": "USD",
+    "service_id": 1,
+    "underlying_asset": "BTC"
+   },
+   "description": "Bitcoin spot price index quoted in US Dollar",
+   "symbol": ".DEXBTUSD",
+   "constituent_exchanges": [],
+   "constituent_indices": {
+    "expression": "${e1} * ${e2}",
+    "indices": {
+     "e1": ".DEXBTUSDT",
+     "e2": ".DEUSDTUSD"
+    }
+   },
+   "health_interval": 300,
+   "impact_size": "1.000000000000000000",
+   "index_type": "spot_pair",
+   "is_composite": true,
+   "price_method": "orderbook",
+   "quoting_asset_id": 14,
+   "tick_size": "0.500000000000000000",
+   "underlying_asset_id": 13
+  },
+  "id": 27,
+  "funding_method": "mark_price",
+  "price_band": "5",
+  "description": "Bitcoin Perpetual futures, quoted, settled & margined in US Dollar",
+  "symbol": "BTCUSD",
+  "impact_size": 10000,
+  "product_specs": {
+   "expiry_interval": 28800,
+   "funding_clamp_value": 0.05,
+   "funding_twap_linear_weighted_enabled": true,
+   "isolated_liq_penalty_factor": 0.0005,
+   "only_reduce_only_orders_allowed": false,
+   "rate_exchange_interval": 28800,
+   "tags": [
+    "layer_1"
+   ]
+  },
+  "auction_finish_time": null,
+  "taker_commission_rate": "0.0005",
+  "max_leverage_notional": "100000",
+  "default_leverage": "200.000000000000000000",
+  "short_description": "Bitcoin Perpetual"
+ }
+}

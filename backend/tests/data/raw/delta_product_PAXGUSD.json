@@ -1,0 +1,152 @@
+{
+ "success": true,
+ "result": {
+  "state": "live",
+  "basis_factor_max_limit": "109.5",
+  "trading_status": "operational",
+  "initial_margin": "1",
+  "spot_index": {
+   "id": 410,
+   "config": {
+    "price_alert_enabled": true,
+    "price_alert_group": "gold_token",
+    "price_alert_shard": 8,
+    "quoting_asset": "USD",
+    "service_id": 17,
+    "underlying_asset": "PAXG"
+   },
+   "description": "PAXG token spot price index quoted in USD",
+   "symbol": ".DEPAXGUSD",
+   "constituent_exchanges": [],
+   "constituent_indices": {
+    "expression": "${e1} * ${e2}",
+    "indices": {
+     "e1": ".DEPAXGUSDT",
+     "e2": ".DEUSDTUSD"
+    }
+   },
+   "health_interval": 300,
+   "impact_size": "10.000000000000000000",
+   "index_type": "spot_pair",
+   "is_composite": true,
+   "price_method": "ltp",
+   "quoting_asset_id": 14,
+   "tick_size": "0.010000000000000000",
+   "underlying_asset_id": 214
+  },
+  "taker_commission_rate": "0.0001",
+  "ui_config": {
+   "chart": "trade",
+   "default_trading_view_candle": "60",
+   "leverage_slider_values": [
+    1,
+    5,
+    10,
+    25,
+    50,
+    100
+   ],
+   "price_clubbing_values": [
+    0.01,
+    0.1,
+    1
+   ],
+   "show_bracket_orders": false,
+   "sort_priority": 11,
+   "tags": []
+  },
+  "maker_commission_rate": "0.0001",
+  "initial_margin_scaling_factor": "0.00001",
+  "strike_price": null,
+  "default_leverage": "100.000000000000000000",
+  "barrier_price": null,
+  "max_leverage_notional": "50000",
+  "notional_type": "vanilla",
+  "tick_size": "0.01",
+  "is_quanto": false,
+  "short_description": "PAX Gold Token Perpetual",
+  "impact_notional": "10000",
+  "underlying_asset": {
+   "id": 214,
+   "name": "PAX Gold Token",
+   "networks": [],
+   "symbol": "PAXG",
+   "precision": 8,
+   "base_withdrawal_fee": "0.000000000000000000",
+   "interest_credit": false,
+   "interest_slabs": null,
+   "kyc_deposit_limit": "0.000000000000000000",
+   "kyc_withdrawal_limit": "0.000000000000000000",
+   "min_withdrawal_amount": "0.000000000000000000",
+   "minimum_precision": 3,
+   "sort_priority": 3,
+   "variable_withdrawal_fee": "0.000000000000000000"
+  },
+  "auction_start_time": "2026-10-17T20:34:26Z",
+  "auction_finish_time": null,
+  "settling_asset": {
+   "id": 14,
+   "name": "US Dollar",
+   "networks": [],
+   "symbol": "USD",
+   "precision": 8,
+   "base_withdrawal_fee": "0.000000000000000000",
+   "interest_credit": false,
+   "interest_slabs": null,
+   "kyc_deposit_limit": "0.000000000000000000",
+   "kyc_withdrawal_limit": "0.000000000000000000",
+   "min_withdrawal_amount": "0.000000000000000000",
+   "minimum_precision": 2,
+   "sort_priority": 3,
+   "variable_withdrawal_fee": "0.000000000000000000"
+  },
+  "annualized_funding": "0.219",
+  "insurance_fund_margin_contribution": "5",
+  "maintenance_margin_scaling_factor": "0.000005",
+  "contract_type": "perpetual_futures",
+  "position_notional_limit": "1250000",
+  "liquidation_penalty_factor": "0.2",
+  "price_band": "10",
+  "settlement_time": null,
+  "disruption_reason": null,
+  "funding_method": "mark_price",
+  "id": 123006,
+  "maintenance_margin": "0.5",
+  "contract_unit_currency": "PAXG",
+  "product_specs": {
+   "expiry_interval": 28800,
+   "funding_clamp_value": 0.2,
+   "funding_twap_linear_weighted_enabled": true,
+   "isolated_liq_penalty_factor": 0.002,
+   "only_reduce_only_orders_allowed": false,
+   "rate_exchange_interval": 14400,
+   "tags": [
+    "metal"
+   ],
+   "top_tag": "tradfi"
+  },
+  "symbol": "PAXGUSD",
+  "impact_size": 2000,
+  "contract_value": "0.001",
+  "description": "PAX Gold Token perpetual future quoted in USD",
+  "settlement_price": null,
+  "quoting_asset": {
+   "id": 14,
+   "name": "US Dollar",
+   "networks": [],
+   "symbol": "USD",
+   "precision": 8,
+   "base_withdrawal_fee": "0.000000000000000000",
+   "interest_credit": false,
+   "interest_slabs": null,
+   "kyc_deposit_limit": "0.000000000000000000",
+   "kyc_withdrawal_limit": "0.000000000000000000",
+   "min_withdrawal_amount": "0.000000000000000000",
+   "minimum_precision": 2,
+   "sort_priority": 3,
+   "variable_withdrawal_fee": "0.000000000000000000"
+  },
+  "position_size_limit": 200000,
+  "launch_time": "2026-02-19T13:19:30Z"
+ }
+}
